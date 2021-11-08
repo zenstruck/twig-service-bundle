@@ -1,0 +1,35 @@
+{
+    "name": "zenstruck/twig-service-bundle",
+    "description": "Access Symfony services from within your twig templates.",
+    "homepage": "https://github.com/zenstruck/twig-service-bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "keywords": ["twig", "dependency injection", "service"],
+    "authors": [
+        {
+            "name": "Kevin Bond",
+            "email": "kevinbond@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "symfony/framework-bundle": "^4.4|^5.0|^6.0",
+        "symfony/twig-bundle": "^4.4|^5.0|^6.0"
+    },
+    "require-dev": {
+        "symfony/phpunit-bridge": "^5.3",
+        "symfony/var-dumper": "^4.4|^5.0|^6.0"
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": { "Zenstruck\\Twig\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Zenstruck\\Twig\\Tests\\": "tests/" }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
