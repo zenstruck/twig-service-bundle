@@ -12,11 +12,11 @@ jobs:
     with:
       phpunit: simple-phpunit
 
-#  code-coverage:
-#    uses: zenstruck/.github/.github/workflows/php-coverage-codecov.yml@main
-#    with:
-#      php: 8
-#      phpunit: simple-phpunit
+  code-coverage:
+    uses: zenstruck/.github/.github/workflows/php-coverage-codecov.yml@main
+    with:
+      php: 8
+      phpunit: simple-phpunit
 
   composer-validate:
     uses: zenstruck/.github/.github/workflows/php-composer-validate.yml@main
