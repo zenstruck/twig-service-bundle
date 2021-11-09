@@ -1,5 +1,8 @@
 # zenstruck/twig-service-bundle
 
+[![CI](https://github.com/zenstruck/twig-service-bundle/actions/workflows/ci.yml/badge.svg)](https://github.com/zenstruck/twig-service-bundle/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/zenstruck/twig-service-bundle/branch/1.x/graph/badge.svg?token=ZK1XSG6X35)](https://codecov.io/gh/zenstruck/twig-service-bundle)
+
 Making data from your app's services available in twig templates can be done by either:
 1. Injecting the service/data into the template when rendering.
 2. Creating a twig extension that has access to the service/data.
