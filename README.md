@@ -19,7 +19,7 @@ access this service _lazily_ in any template via an _alias_.
 ## Installation
 
 ```bash
-composer require zenstruck/signed-url-bundle
+composer require zenstruck/twig-service-bundle
 ```
 
 **NOTE**: If not added automatically by `symfony/flex`, enable `ZenstruckTwigServiceBundle`.
