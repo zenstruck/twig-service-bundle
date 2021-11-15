@@ -16,6 +16,11 @@ for heavy services), it could lead to performance issues.
 This bundle provides a way to mark any service as a _twig service_. You can then
 access this service _lazily_ in any template via an _alias_.
 
+While you can mark any service as a _twig service_, it is not recommended to mark services
+that have nothing to do with templating (ie repositories) as such. You can think of twig
+services as _lightweight-lazy-twig-extension-functions_ whose purpose is to break up/simplify
+large custom twig extensions.
+
 ## Installation
 
 ```bash
@@ -30,20 +35,27 @@ Mark any service you'd like to make available in twig templates with the `AsTwig
 attribute which requires an _alias_:
 
 ```php
-namespace App\Repository;
+namespace App\Twig\Service;
 
 // ...
 use Zenstruck\Twig\AsTwigService;
 
 #[AsTwigService(alias: 'post-repo')]
-class PostRepository extends ServiceEntityRepository
+class PostService
 {
+    private PostRepository $repo;
+
+    public function __construct(PostRepository $repo)
+    {
+        $this->repo = $repo;
+    }
+
     /**
      * @return Post[]
      */
     public function latestPosts(int $number = 10): array
     {
-        // ...
+        return $this->repo->findLatestPosts($number);
     }
 }
 ```
@@ -53,7 +65,7 @@ the service and add the `twig.service` tag:
 
 ```yaml
 services:
-    App\Repository\PostRepository:
+    App\Twig\Service\PostService:
         tags:
             - { name: twig.service, alias: post-repo }
 ```
