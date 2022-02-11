@@ -40,7 +40,7 @@ namespace App\Twig\Service;
 // ...
 use Zenstruck\Twig\AsTwigService;
 
-#[AsTwigService(alias: 'post-repo')]
+#[AsTwigService(alias: 'post-service')]
 class PostService
 {
     private PostRepository $repo;
@@ -67,13 +67,13 @@ the service and add the `twig.service` tag:
 services:
     App\Twig\Service\PostService:
         tags:
-            - { name: twig.service, alias: post-repo }
+            - { name: twig.service, alias: post-service }
 ```
 
 You're now ready to access the service in any twig template:
 
 ```twig
-{% for post in service('post-repo').latestPosts(5) %}
+{% for post in service('post-service').latestPosts(5) %}
     {# ... #}
 {% endfor %}
 ```
