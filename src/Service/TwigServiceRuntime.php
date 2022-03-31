@@ -27,4 +27,21 @@ final class TwigServiceRuntime
             throw new \RuntimeException(\sprintf('Twig service with alias "%s" is not registered. Registered services: "%s"', $alias, \implode(', ', \array_keys($this->container->getProvidedServices()))));
         }
     }
+
+    /**
+     * @param mixed $value
+     * @param mixed ...$args
+     *
+     * @return mixed
+     */
+    public function filter($value, string $alias, ...$args)
+    {
+        $service = $this->get($alias);
+
+        if (!\is_callable($service)) {
+            throw new \RuntimeException(\sprintf('Twig service "%s" (%s) must be implement "__invoke()" to be used as an invokable service filter.', $alias, \get_class($service)));
+        }
+
+        return $service($value, ...$args);
+    }
 }

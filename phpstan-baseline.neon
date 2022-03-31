@@ -1,7 +1,7 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Comparison operation \"\\<\" between 60004 and 50300 is always false\\.$#"
+			message: "#^Comparison operation \"\\<\" between 60006 and 50300 is always false\\.$#"
 			count: 1
 			path: tests/Fixture/Kernel.php
 
