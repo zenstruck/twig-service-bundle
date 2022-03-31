@@ -32,6 +32,38 @@ final class IntegrationTest extends KernelTestCase
         self::container()->get('twig')->render('template2.html.twig');
     }
 
+    /**
+     * @test
+     */
+    public function invokable_service_filter(): void
+    {
+        $rendered = self::container()->get('twig')->render('template3.html.twig');
+
+        $this->assertSame("foo\nfoo bar baz\n", $rendered);
+    }
+
+    /**
+     * @test
+     */
+    public function invokable_service_filter_must_be_invokable(): void
+    {
+        $this->expectException(RuntimeError::class);
+        $this->expectExceptionMessage('Twig service "service-b" (Zenstruck\Twig\Tests\Fixture\ServiceB) must be implement "__invoke()" to be used as an invokable service filter.');
+
+        self::container()->get('twig')->render('template4.html.twig');
+    }
+
+    /**
+     * @test
+     */
+    public function invalid_invokable_service_alias(): void
+    {
+        $this->expectException(RuntimeError::class);
+        $this->expectExceptionMessage('Twig service with alias "invalid" is not registered. Registered services: "service-a, service-b"');
+
+        self::container()->get('twig')->render('template5.html.twig');
+    }
+
     private static function container(): ContainerInterface
     {
         if (\method_exists(self::class, 'getContainer')) {

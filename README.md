@@ -77,3 +77,29 @@ You're now ready to access the service in any twig template:
     {# ... #}
 {% endfor %}
 ```
+
+### Invokable Filters
+
+You can turn any twig service into a twig filter by having it implement `__invoke()`:
+
+```php
+namespace App\Twig\Service;
+
+// ...
+use Zenstruck\Twig\AsTwigService;
+
+#[AsTwigService(alias: 'image-transformer')]
+class ImageTransformer
+{
+    public function __invoke(string $imageUrl, string ...$transformations): string
+    {
+        // adds transformation to url and returns new url
+    }
+}
+```
+
+In your template, use the `service` twig filter:
+
+```twig
+{{ url|service('image-transformer', 'square-200', 'watermark') }}
+```
