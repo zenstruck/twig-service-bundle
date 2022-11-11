@@ -27,7 +27,7 @@ large custom twig extensions.
 composer require zenstruck/twig-service-bundle
 ```
 
-**NOTE**: If not added automatically by `symfony/flex`, enable `ZenstruckTwigServiceBundle`.
+> **Note**: If not added automatically by `symfony/flex`, enable `ZenstruckTwigServiceBundle`.
 
 ## Usage
 
@@ -58,16 +58,6 @@ class PostService
         return $this->repo->findLatestPosts($number);
     }
 }
-```
-
-**NOTE**: If not using autowiring, on PHP 7, or Symfony < 5.3, you'll need to register
-the service and add the `twig.service` tag:
-
-```yaml
-services:
-    App\Twig\Service\PostService:
-        tags:
-            - { name: twig.service, alias: post-service }
 ```
 
 You're now ready to access the service in any twig template:

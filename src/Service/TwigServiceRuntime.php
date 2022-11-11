@@ -12,11 +12,8 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
  */
 final class TwigServiceRuntime
 {
-    private ServiceLocator $container;
-
-    public function __construct(ServiceLocator $container)
+    public function __construct(private ServiceLocator $container)
     {
-        $this->container = $container;
     }
 
     public function get(string $alias): object
@@ -28,13 +25,7 @@ final class TwigServiceRuntime
         }
     }
 
-    /**
-     * @param mixed $value
-     * @param mixed ...$args
-     *
-     * @return mixed
-     */
-    public function filter($value, string $alias, ...$args)
+    public function filter(mixed $value, string $alias, mixed ...$args): mixed
     {
         $service = $this->get($alias);
 

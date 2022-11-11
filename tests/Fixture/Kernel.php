@@ -36,16 +36,7 @@ final class Kernel extends BaseKernel
             'default_path' => '%kernel.project_dir%/tests/Fixture/templates',
         ]);
 
-        $a = $c->register(ServiceA::class)->setAutoconfigured(true)->setAutowired(true);
-        $b = $c->register(ServiceB::class)->setAutoconfigured(true)->setAutowired(true);
-
-        if (\PHP_VERSION_ID < 80000 || self::VERSION_ID < 50300) {
-            $a->addTag('twig.service', ['alias' => 'service-a']);
-            $b->addTag('twig.service', ['alias' => 'service-b']);
-        }
-    }
-
-    protected function configureRoutes($routes): void
-    {
+        $c->register(ServiceA::class)->setAutoconfigured(true)->setAutowired(true);
+        $c->register(ServiceB::class)->setAutoconfigured(true)->setAutowired(true);
     }
 }

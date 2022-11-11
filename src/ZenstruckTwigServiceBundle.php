@@ -18,20 +18,18 @@ final class ZenstruckTwigServiceBundle extends Bundle
 {
     public function build(ContainerBuilder $container): void
     {
-        if (\method_exists($container, 'registerAttributeForAutoconfiguration')) {
-            $container->registerAttributeForAutoconfiguration(
-                AsTwigService::class,
-                static function(ChildDefinition $definition, AsTwigService $attribute) {
-                    $definition->addTag('twig.service', ['alias' => $attribute->alias]);
-                }
-            );
-        }
+        $container->registerAttributeForAutoconfiguration(
+            AsTwigService::class,
+            static function(ChildDefinition $definition, AsTwigService $attribute) {
+                $definition->addTag('twig.service', ['alias' => $attribute->alias]);
+            }
+        );
 
-        $container->register('zenstruck.twig.service_extension', TwigServiceExtension::class)
+        $container->register('.zenstruck.twig.service_extension', TwigServiceExtension::class)
             ->addTag('twig.extension')
         ;
-        $container->register('zenstruck.twig.service_runtime', TwigServiceRuntime::class)
-            ->setArgument(0, new ServiceLocatorArgument(new TaggedIteratorArgument('twig.service', 'alias', null, true)))
+        $container->register('.zenstruck.twig.service_runtime', TwigServiceRuntime::class)
+            ->addArgument(new ServiceLocatorArgument(new TaggedIteratorArgument('twig.service', 'alias', needsIndexes: true)))
             ->addTag('twig.runtime')
         ;
     }
