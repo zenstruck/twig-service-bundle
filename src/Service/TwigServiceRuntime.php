@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the zenstruck/twig-service-bundle package.
+ *
+ * (c) Kevin Bond <kevinbond@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Zenstruck\Twig\Service;
 
 use Psr\Container\NotFoundExceptionInterface;
@@ -30,7 +39,7 @@ final class TwigServiceRuntime
         $service = $this->get($alias);
 
         if (!\is_callable($service)) {
-            throw new \RuntimeException(\sprintf('Twig service "%s" (%s) must be implement "__invoke()" to be used as an invokable service filter.', $alias, \get_class($service)));
+            throw new \RuntimeException(\sprintf('Twig service "%s" (%s) must be implement "__invoke()" to be used as an invokable service filter.', $alias, $service::class));
         }
 
         return $service($value, ...$args);
