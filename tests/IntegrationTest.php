@@ -26,7 +26,7 @@ final class IntegrationTest extends KernelTestCase
     {
         $rendered = self::getContainer()->get('twig')->render('template1.html.twig');
 
-        $this->assertSame("prop value\nmethod return 1\nmethod return 2\n", $rendered);
+        $this->assertSame("prop value\nmethod return 1\nmethod return 2\nprop value\nmethod return 1\nmethod return 2\n", $rendered);
     }
 
     /**
@@ -47,7 +47,7 @@ final class IntegrationTest extends KernelTestCase
     {
         $rendered = self::getContainer()->get('twig')->render('template3.html.twig');
 
-        $this->assertSame("foo\nfoo bar baz\n", $rendered);
+        $this->assertSame("foo\nfoo bar baz\nfoo\nfoo bar baz\n", $rendered);
     }
 
     /**
