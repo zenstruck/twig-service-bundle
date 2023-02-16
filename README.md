@@ -40,7 +40,7 @@ namespace App\Twig\Service;
 // ...
 use Zenstruck\Twig\AsTwigService;
 
-#[AsTwigService(alias: 'post-service')]
+#[AsTwigService(alias: 'post_service')]
 class PostService
 {
     private PostRepository $repo;
@@ -63,7 +63,7 @@ class PostService
 You're now ready to access the service in any twig template:
 
 ```twig
-{% for post in service('post-service').latestPosts(5) %}
+{% for post in service('post_service').latestPosts(5) %}
     {# ... #}
 {% endfor %}
 ```
@@ -78,7 +78,7 @@ namespace App\Twig\Service;
 // ...
 use Zenstruck\Twig\AsTwigService;
 
-#[AsTwigService(alias: 'image-transformer')]
+#[AsTwigService(alias: 'image_transformer')]
 class ImageTransformer
 {
     public function __invoke(string $imageUrl, string ...$transformations): string
@@ -91,5 +91,5 @@ class ImageTransformer
 In your template, use the `service` twig filter:
 
 ```twig
-{{ url|service('image-transformer', 'square-200', 'watermark') }}
+{{ url|service('image_transformer', 'square-200', 'watermark') }}
 ```
