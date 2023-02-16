@@ -24,11 +24,17 @@ final class TwigServiceExtension extends AbstractExtension
 {
     public function getFunctions(): array
     {
-        return [new TwigFunction('service', [TwigServiceRuntime::class, 'get'])];
+        return [
+            new TwigFunction('service', [TwigServiceRuntime::class, 'get']),
+            new TwigFunction('service_*', [TwigServiceRuntime::class, 'get']),
+        ];
     }
 
     public function getFilters(): array
     {
-        return [new TwigFilter('service', [TwigServiceRuntime::class, 'filter'])];
+        return [
+            new TwigFilter('service', [TwigServiceRuntime::class, 'filter']),
+            new TwigFilter('service_*', [TwigServiceRuntime::class, 'dynamicFilter']),
+        ];
     }
 }

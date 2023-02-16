@@ -16,7 +16,7 @@ use Zenstruck\Twig\AsTwigService;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-#[AsTwigService('service-b')]
+#[AsTwigService('service_b')]
 final class ServiceB
 {
 }

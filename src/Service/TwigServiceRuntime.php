@@ -44,4 +44,9 @@ final class TwigServiceRuntime
 
         return $service($value, ...$args);
     }
+
+    public function dynamicFilter(string $alias, mixed $value, mixed ...$args): mixed
+    {
+        return $this->filter($value, $alias, ...$args);
+    }
 }

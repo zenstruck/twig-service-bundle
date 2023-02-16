@@ -16,7 +16,7 @@ use Zenstruck\Twig\AsTwigService;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-#[AsTwigService('service-a')]
+#[AsTwigService('service_a')]
 final class ServiceA
 {
     public string $property = 'prop value';

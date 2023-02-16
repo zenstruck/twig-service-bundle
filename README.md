@@ -31,6 +31,8 @@ composer require zenstruck/twig-service-bundle
 
 ## Usage
 
+### Service Function
+
 Mark any service you'd like to make available in twig templates with the `AsTwigService`
 attribute which requires an _alias_:
 
@@ -40,7 +42,7 @@ namespace App\Twig\Service;
 // ...
 use Zenstruck\Twig\AsTwigService;
 
-#[AsTwigService(alias: 'post-service')]
+#[AsTwigService(alias: 'posts')]
 class PostService
 {
     private PostRepository $repo;
@@ -63,7 +65,15 @@ class PostService
 You're now ready to access the service in any twig template:
 
 ```twig
-{% for post in service('post-service').latestPosts(5) %}
+{% for post in service('posts').latestPosts(5) %}
+    {# ... #}
+{% endfor %}
+```
+
+There is also a dynamic function. The following is equivalent to above:
+
+```twig
+{% for post in service_posts().latestPosts(5) %}
     {# ... #}
 {% endfor %}
 ```
@@ -78,7 +88,7 @@ namespace App\Twig\Service;
 // ...
 use Zenstruck\Twig\AsTwigService;
 
-#[AsTwigService(alias: 'image-transformer')]
+#[AsTwigService(alias: 'image_transformer')]
 class ImageTransformer
 {
     public function __invoke(string $imageUrl, string ...$transformations): string
@@ -91,5 +101,18 @@ class ImageTransformer
 In your template, use the `service` twig filter:
 
 ```twig
-{{ url|service('image-transformer', 'square-200', 'watermark') }}
+{{ url|service('image_transformer', 'square-200', 'watermark') }}
+```
+
+There is also a dynamic filter. The following is equivalent to above:
+
+```twig
+{{ url|service_image_transformer('square-200', 'watermark') }}
+```
+
+Note, the output will be escaped. If your filter returns html that you don't want
+escaped, use the `raw` filter:
+
+```twig
+{{ url|service_image_transformer('square-200', 'watermark')|raw }}
 ```
