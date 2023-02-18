@@ -11,6 +11,8 @@
 
 namespace Zenstruck\Twig\Service;
 
+use Symfony\Component\DependencyInjection\ServiceLocator;
+
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
@@ -19,19 +21,23 @@ namespace Zenstruck\Twig\Service;
 final class TwigFunctionRuntime
 {
     /**
-     * @param array<string,callable-string> $functions
+     * @param array<string,callable-string|array{0:string,1:string}> $functions
      */
-    public function __construct(private array $functions)
+    public function __construct(private ServiceLocator $container, private array $functions)
     {
     }
 
     public function call(string $alias, mixed ...$args): mixed
     {
-        if (isset($this->functions[$alias])) {
-            return $this->functions[$alias](...$args);
+        if (!$callable = $this->functions[$alias] ?? null) {
+            throw new \RuntimeException(\sprintf('Twig function with alias "%s" is not registered. Registered functions: "%s"', $alias, \implode(', ', \array_keys($this->functions))));
         }
 
-        throw new \RuntimeException(\sprintf('Twig function with alias "%s" is not registered. Registered functions: "%s"', $alias, \implode(', ', \array_keys($this->functions))));
+        if (\is_string($callable)) {
+            return $callable(...$args);
+        }
+
+        return $this->container->get($callable[0])->{$callable[1]}(...$args);
     }
 
     public function filter(mixed $value, string $alias, mixed ...$args): mixed

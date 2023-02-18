@@ -126,7 +126,59 @@ twig function:
 {% endfor %}
 ```
 
-### User Defined Functions/Filters
+### Service Methods as Functions/Filters
+
+You can any public method in your configured services with the `#[AsTwigFunction]`
+attribute to make them available within your twig templates with the `fn()` twig
+function/filter:
+
+```php
+// ...
+use Zenstruck\Twig\AsTwigFunction;
+
+class SomeService
+{
+    // ...
+
+    #[AsTwigFunction] // will be available as "some_function" in twig
+    public function someMethod($arg1, $arg2): string
+    {
+        // ...
+    }
+
+    #[AsTwigFunction('alias')] // will be available as "alias" in twig
+    public function anotherMethod($arg1, $arg2): string
+    {
+        // ...
+    }
+}
+```
+
+In your twig template, use the `fn()` function/filter to call:
+
+```twig
+{# as a function: #}
+{{ fn('someMethod', 'foo', 'bar') }}
+{{ fn('alias', 'foo', 'bar') }}
+
+{# as a filter: #}
+{{ 'foo'|fn('someMethod', 'bar') }}
+{{ 'foo'|fn('alias', 'bar') }}
+```
+
+_Dynamic_ functions/filters are made available. The following is equivalent to above:
+
+```twig
+{# as a function: #}
+{{ fn_someMethod('foo', 'bar') }}
+{{ fn_alias('foo', 'bar') }}
+
+{# as a filter: #}
+{{ 'foo'|fn_someMethod('bar') }}
+{{ 'foo'|fn_alias('bar') }}
+```
+
+### User Defined as Functions/Filters
 
 You can mark any of your custom functions with the `#[AsTwigFunction]` attribute
 to make them available within your twig templates with the `fn()` twig function\filter:
@@ -134,13 +186,13 @@ to make them available within your twig templates with the `fn()` twig function\
 ```php
 use Zenstruck\Twig\AsTwigFunction;
 
-#[AsTwigFunction]
+#[AsTwigFunction] // will be available as "some_function" in twig
 function some_function($arg1, $arg2): string
 {
     // ...
 }
 
-#[AsTwigFunction('alias')] // give this a different name in twig
+#[AsTwigFunction('alias')] // will be available as "alias" in twig
 function another_function($arg1, $arg2): string
 {
     // ...

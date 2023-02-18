@@ -101,4 +101,24 @@ final class IntegrationTest extends KernelTestCase
 
         $this->assertSame("first\nfirstfoobar\nsecond\nsecondfoobar\nthird\nthirdfoobar\nfirstfoo\nfirstfoobar\nsecondfoo\nsecondfoobar\nthirdfoo\nthirdfoobar\n", $rendered);
     }
+
+    /**
+     * @test
+     */
+    public function fn_as_service_method_functions_and_filters(): void
+    {
+        $rendered = self::getContainer()->get('twig')->render('template9.html.twig');
+
+        $this->assertSame("method1\nmethod1foobar\nmethod2\nmethod2foobar\nmethod1foo\nmethod1foobar\nmethod2foo\nmethod2foobar\n", $rendered);
+    }
+
+    /**
+     * @test
+     */
+    public function dynamic_fn_as_service_method_functions_and_filters(): void
+    {
+        $rendered = self::getContainer()->get('twig')->render('template10.html.twig');
+
+        $this->assertSame("method1\nmethod1foobar\nmethod2\nmethod2foobar\nmethod1foo\nmethod1foobar\nmethod2foo\nmethod2foobar\n", $rendered);
+    }
 }

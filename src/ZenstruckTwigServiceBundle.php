@@ -45,6 +45,7 @@ final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInt
             ->addTag('twig.runtime')
         ;
         $container->register('.zenstruck.twig.function_runtime', TwigFunctionRuntime::class)
+            ->addArgument(new ServiceLocatorArgument(new TaggedIteratorArgument('twig.service_method', 'alias', needsIndexes: true)))
             ->addTag('twig.runtime')
         ;
 
@@ -57,8 +58,39 @@ final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInt
             ->addTag('twig.service', ['alias' => TwigServiceRuntime::PARAMETER_BAG])
         ;
 
-        /** @var array<string,callable-string> $userFunctions */
+        /** @var array<string,callable-string|array{0:string,1:string}> $userFunctions */
         $userFunctions = [];
+
+        foreach ($container->getDefinitions() as $id => $definition) {
+            if (!$class = $definition->getClass()) {
+                continue;
+            }
+
+            if (!\class_exists($class)) {
+                continue;
+            }
+
+            $addTag = false;
+
+            foreach ((new \ReflectionClass($class))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                if (!$attribute = $method->getAttributes(AsTwigFunction::class)[0] ?? null) {
+                    continue;
+                }
+
+                $alias = $attribute->newInstance()->alias ?? $method->name;
+
+                if (isset($userFunctions[$alias])) {
+                    throw new LogicException(\sprintf('The function alias "%s" is already being used for "%s".', $alias, \is_string($userFunctions[$alias]) ? $userFunctions[$alias] : \implode('::', $userFunctions[$alias])));
+                }
+
+                $addTag = true;
+                $userFunctions[$alias] = [$id, $method->name];
+            }
+
+            if ($addTag) {
+                $definition->addTag('twig.service_method', ['alias' => $id]);
+            }
+        }
 
         foreach (\get_defined_functions()['user'] as $function) {
             $ref = new \ReflectionFunction($function);
@@ -70,7 +102,7 @@ final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInt
             $alias = $attribute->newInstance()->alias ?? $ref->getShortName();
 
             if (isset($userFunctions[$alias])) {
-                throw new LogicException(\sprintf('The function alias "%s" is already being used for "%s".', $alias, $userFunctions[$alias]));
+                throw new LogicException(\sprintf('The function alias "%s" is already being used for "%s".', $alias, \is_string($userFunctions[$alias]) ? $userFunctions[$alias] : \implode('::', $userFunctions[$alias])));
             }
 
             $userFunctions[$alias] = $ref->name;

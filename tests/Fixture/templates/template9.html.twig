@@ -1,0 +1,8 @@
+{{ fn('method1') }}
+{{ fn('method1', 'foo', 'bar') }}
+{{ fn('custom_method') }}
+{{ fn('custom_method', 'foo', 'bar') }}
+{{ 'foo'|fn('method1') }}
+{{ 'foo'|fn('method1', 'bar') }}
+{{ 'foo'|fn('custom_method') }}
+{{ 'foo'|fn('custom_method', 'bar') }}

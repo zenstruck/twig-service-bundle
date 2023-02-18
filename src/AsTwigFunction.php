@@ -16,7 +16,7 @@ namespace Zenstruck\Twig;
  *
  * @readonly
  */
-#[\Attribute(\Attribute::TARGET_FUNCTION)]
+#[\Attribute(\Attribute::TARGET_FUNCTION | \Attribute::TARGET_METHOD)]
 final class AsTwigFunction
 {
     public function __construct(public ?string $alias = null)

@@ -48,5 +48,6 @@ final class Kernel extends BaseKernel
         $c->setParameter('foo', 'bar');
         $c->register(ServiceA::class)->setAutoconfigured(true)->setAutowired(true);
         $c->register(ServiceB::class)->setAutoconfigured(true)->setAutowired(true);
+        $c->register(ServiceC::class)->setAutoconfigured(true)->setAutowired(true);
     }
 }
