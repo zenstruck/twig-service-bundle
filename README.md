@@ -31,6 +31,9 @@ composer require zenstruck/twig-service-bundle
 
 ## Usage
 
+> **Note**: the output for the following functions/filters will be escaped. If your
+> function\filter returns html that you don't want escaped, use the `|raw` filter.
+
 ### Service Function
 
 Mark any service you'd like to make available in twig templates with the `#[AsTwigService]`
@@ -70,7 +73,8 @@ You're now ready to access the service in any twig template:
 {% endfor %}
 ```
 
-There is also a dynamic function. The following is equivalent to above:
+Each service alias is made available as a _dynamic_ function. The following is equivalent
+to above:
 
 ```twig
 {% for post in service_posts().latestPosts(5) %}
@@ -104,17 +108,11 @@ In your template, use the `service` twig filter:
 {{ url|service('image_transformer', 'square-200', 'watermark') }}
 ```
 
-There is also a dynamic filter. The following is equivalent to above:
+Each service alias is made available as a _dynamic_ filter. The following is equivalent
+to above:
 
 ```twig
 {{ url|service_image_transformer('square-200', 'watermark') }}
-```
-
-Note, the output will be escaped. If your filter returns html that you don't want
-escaped, use the `raw` filter:
-
-```twig
-{{ url|service_image_transformer('square-200', 'watermark')|raw }}
 ```
 
 ### Parameter Function
@@ -159,4 +157,16 @@ In your twig template, use the `fn()` function/filter to call:
 {# as a filter: #}
 {{ 'foo'|fn('some_function', 'bar') }}
 {{ 'foo'|fn('alias', 'bar') }}
+```
+
+_Dynamic_ functions/filters are made available. The following is equivalent to above:
+
+```twig
+{# as a function: #}
+{{ fn_some_function('foo', 'bar') }}
+{{ fn_alias('foo', 'bar') }}
+
+{# as a filter: #}
+{{ 'foo'|fn_some_function('bar') }}
+{{ 'foo'|fn_alias('bar') }}
 ```
