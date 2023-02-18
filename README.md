@@ -31,9 +31,12 @@ composer require zenstruck/twig-service-bundle
 
 ## Usage
 
+> **Note**: the output for the following functions/filters will be escaped. If your
+> function\filter returns html that you don't want escaped, use the `|raw` filter.
+
 ### Service Function
 
-Mark any service you'd like to make available in twig templates with the `AsTwigService`
+Mark any service you'd like to make available in twig templates with the `#[AsTwigService]`
 attribute which requires an _alias_:
 
 ```php
@@ -70,7 +73,8 @@ You're now ready to access the service in any twig template:
 {% endfor %}
 ```
 
-There is also a dynamic function. The following is equivalent to above:
+Each service alias is made available as a _dynamic_ function. The following is equivalent
+to above:
 
 ```twig
 {% for post in service_posts().latestPosts(5) %}
@@ -104,17 +108,11 @@ In your template, use the `service` twig filter:
 {{ url|service('image_transformer', 'square-200', 'watermark') }}
 ```
 
-There is also a dynamic filter. The following is equivalent to above:
+Each service alias is made available as a _dynamic_ filter. The following is equivalent
+to above:
 
 ```twig
 {{ url|service_image_transformer('square-200', 'watermark') }}
-```
-
-Note, the output will be escaped. If your filter returns html that you don't want
-escaped, use the `raw` filter:
-
-```twig
-{{ url|service_image_transformer('square-200', 'watermark')|raw }}
 ```
 
 ### Parameter Function
@@ -126,4 +124,101 @@ twig function:
 {% for locale in parameter('kernel.enabled_locales') %}
     {# ... #}
 {% endfor %}
+```
+
+### Service Methods as Functions/Filters
+
+You can any public method in your configured services with the `#[AsTwigFunction]`
+attribute to make them available within your twig templates with the `fn()` twig
+function/filter:
+
+```php
+// ...
+use Zenstruck\Twig\AsTwigFunction;
+
+class SomeService
+{
+    // ...
+
+    #[AsTwigFunction] // will be available as "some_function" in twig
+    public function someMethod($arg1, $arg2): string
+    {
+        // ...
+    }
+
+    #[AsTwigFunction('alias')] // will be available as "alias" in twig
+    public function anotherMethod($arg1, $arg2): string
+    {
+        // ...
+    }
+}
+```
+
+In your twig template, use the `fn()` function/filter to call:
+
+```twig
+{# as a function: #}
+{{ fn('someMethod', 'foo', 'bar') }}
+{{ fn('alias', 'foo', 'bar') }}
+
+{# as a filter: #}
+{{ 'foo'|fn('someMethod', 'bar') }}
+{{ 'foo'|fn('alias', 'bar') }}
+```
+
+_Dynamic_ functions/filters are made available. The following is equivalent to above:
+
+```twig
+{# as a function: #}
+{{ fn_someMethod('foo', 'bar') }}
+{{ fn_alias('foo', 'bar') }}
+
+{# as a filter: #}
+{{ 'foo'|fn_someMethod('bar') }}
+{{ 'foo'|fn_alias('bar') }}
+```
+
+### User Defined as Functions/Filters
+
+You can mark any of your custom functions with the `#[AsTwigFunction]` attribute
+to make them available within your twig templates with the `fn()` twig function\filter:
+
+```php
+use Zenstruck\Twig\AsTwigFunction;
+
+#[AsTwigFunction] // will be available as "some_function" in twig
+function some_function($arg1, $arg2): string
+{
+    // ...
+}
+
+#[AsTwigFunction('alias')] // will be available as "alias" in twig
+function another_function($arg1, $arg2): string
+{
+    // ...
+}
+```
+
+In your twig template, use the `fn()` function/filter to call:
+
+```twig
+{# as a function: #}
+{{ fn('some_function', 'foo', 'bar') }}
+{{ fn('alias', 'foo', 'bar') }}
+
+{# as a filter: #}
+{{ 'foo'|fn('some_function', 'bar') }}
+{{ 'foo'|fn('alias', 'bar') }}
+```
+
+_Dynamic_ functions/filters are made available. The following is equivalent to above:
+
+```twig
+{# as a function: #}
+{{ fn_some_function('foo', 'bar') }}
+{{ fn_alias('foo', 'bar') }}
+
+{# as a filter: #}
+{{ 'foo'|fn_some_function('bar') }}
+{{ 'foo'|fn_alias('bar') }}
 ```

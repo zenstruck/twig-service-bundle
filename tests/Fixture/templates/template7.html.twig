@@ -1,0 +1,12 @@
+{{ fn('first') }}
+{{ fn('first', 'foo', 'bar') }}
+{{ fn('second') }}
+{{ fn('second', 'foo', 'bar') }}
+{{ fn('custom_third') }}
+{{ fn('custom_third', 'foo', 'bar') }}
+{{ 'foo'|fn('first') }}
+{{ 'foo'|fn('first', 'bar') }}
+{{ 'foo'|fn('second') }}
+{{ 'foo'|fn('second', 'bar') }}
+{{ 'foo'|fn('custom_third') }}
+{{ 'foo'|fn('custom_third', 'bar') }}
