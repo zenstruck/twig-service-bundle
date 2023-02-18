@@ -45,6 +45,7 @@ final class Kernel extends BaseKernel
             'default_path' => '%kernel.project_dir%/tests/Fixture/templates',
         ]);
 
+        $c->setParameter('foo', 'bar');
         $c->register(ServiceA::class)->setAutoconfigured(true)->setAutowired(true);
         $c->register(ServiceB::class)->setAutoconfigured(true)->setAutowired(true);
     }

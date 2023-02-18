@@ -14,6 +14,7 @@ namespace Zenstruck\Twig;
 use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -23,7 +24,7 @@ use Zenstruck\Twig\Service\TwigServiceRuntime;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class ZenstruckTwigServiceBundle extends Bundle
+final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInterface
 {
     public function build(ContainerBuilder $container): void
     {
@@ -40,6 +41,15 @@ final class ZenstruckTwigServiceBundle extends Bundle
         $container->register('.zenstruck.twig.service_runtime', TwigServiceRuntime::class)
             ->addArgument(new ServiceLocatorArgument(new TaggedIteratorArgument('twig.service', 'alias', needsIndexes: true)))
             ->addTag('twig.runtime')
+        ;
+
+        $container->addCompilerPass($this);
+    }
+
+    public function process(ContainerBuilder $container): void
+    {
+        $container->getDefinition('parameter_bag')
+            ->addTag('twig.service', ['alias' => TwigServiceRuntime::PARAMETER_BAG])
         ;
     }
 

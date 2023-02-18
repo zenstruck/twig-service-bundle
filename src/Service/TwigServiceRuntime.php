@@ -21,6 +21,8 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
  */
 final class TwigServiceRuntime
 {
+    public const PARAMETER_BAG = '__parameter_bag';
+
     public function __construct(private ServiceLocator $container)
     {
     }
@@ -30,7 +32,7 @@ final class TwigServiceRuntime
         try {
             return $this->container->get($alias);
         } catch (NotFoundExceptionInterface $e) {
-            throw new \RuntimeException(\sprintf('Twig service with alias "%s" is not registered. Registered services: "%s"', $alias, \implode(', ', \array_keys($this->container->getProvidedServices()))));
+            throw new \RuntimeException(\sprintf('Twig service with alias "%s" is not registered. Registered services: "%s"', $alias, \implode(', ', \array_filter(\array_keys($this->container->getProvidedServices()), static fn($v) => self::PARAMETER_BAG !== $v))));
         }
     }
 
@@ -48,5 +50,10 @@ final class TwigServiceRuntime
     public function dynamicFilter(string $alias, mixed $value, mixed ...$args): mixed
     {
         return $this->filter($value, $alias, ...$args);
+    }
+
+    public function parameter(string $name): mixed
+    {
+        return $this->container->get(self::PARAMETER_BAG)->get($name);
     }
 }

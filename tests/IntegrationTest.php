@@ -71,4 +71,14 @@ final class IntegrationTest extends KernelTestCase
 
         self::getContainer()->get('twig')->render('template5.html.twig');
     }
+
+    /**
+     * @test
+     */
+    public function can_use_parameter_function(): void
+    {
+        $rendered = self::getContainer()->get('twig')->render('template6.html.twig');
+
+        $this->assertSame("bar\n", $rendered);
+    }
 }
