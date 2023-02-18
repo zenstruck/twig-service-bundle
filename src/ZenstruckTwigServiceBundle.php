@@ -16,8 +16,10 @@ use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Zenstruck\Twig\Service\TwigFunctionRuntime;
 use Zenstruck\Twig\Service\TwigServiceExtension;
 use Zenstruck\Twig\Service\TwigServiceRuntime;
 
@@ -42,6 +44,9 @@ final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInt
             ->addArgument(new ServiceLocatorArgument(new TaggedIteratorArgument('twig.service', 'alias', needsIndexes: true)))
             ->addTag('twig.runtime')
         ;
+        $container->register('.zenstruck.twig.function_runtime', TwigFunctionRuntime::class)
+            ->addTag('twig.runtime')
+        ;
 
         $container->addCompilerPass($this);
     }
@@ -50,6 +55,29 @@ final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInt
     {
         $container->getDefinition('parameter_bag')
             ->addTag('twig.service', ['alias' => TwigServiceRuntime::PARAMETER_BAG])
+        ;
+
+        /** @var array<string,callable-string> $userFunctions */
+        $userFunctions = [];
+
+        foreach (\get_defined_functions()['user'] as $function) {
+            $ref = new \ReflectionFunction($function);
+
+            if (!$attribute = $ref->getAttributes(AsTwigFunction::class)[0] ?? null) {
+                continue;
+            }
+
+            $alias = $attribute->newInstance()->alias ?? $ref->getShortName();
+
+            if (isset($userFunctions[$alias])) {
+                throw new LogicException(\sprintf('The function alias "%s" is already being used for "%s".', $alias, $userFunctions[$alias]));
+            }
+
+            $userFunctions[$alias] = $ref->name;
+        }
+
+        $container->getDefinition('.zenstruck.twig.function_runtime')
+            ->addArgument($userFunctions)
         ;
     }
 

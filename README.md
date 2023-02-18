@@ -33,7 +33,7 @@ composer require zenstruck/twig-service-bundle
 
 ### Service Function
 
-Mark any service you'd like to make available in twig templates with the `AsTwigService`
+Mark any service you'd like to make available in twig templates with the `#[AsTwigService]`
 attribute which requires an _alias_:
 
 ```php
@@ -126,4 +126,37 @@ twig function:
 {% for locale in parameter('kernel.enabled_locales') %}
     {# ... #}
 {% endfor %}
+```
+
+### User Defined Functions/Filters
+
+You can mark any of your custom functions with the `#[AsTwigFunction]` attribute
+to make them available within your twig templates with the `fn()` twig function\filter:
+
+```php
+use Zenstruck\Twig\AsTwigFunction;
+
+#[AsTwigFunction]
+function some_function($arg1, $arg2): string
+{
+    // ...
+}
+
+#[AsTwigFunction('alias')] // give this a different name in twig
+function another_function($arg1, $arg2): string
+{
+    // ...
+}
+```
+
+In your twig template, use the `fn()` function/filter to call:
+
+```twig
+{# as a function: #}
+{{ fn('some_function', 'foo', 'bar') }}
+{{ fn('alias', 'foo', 'bar') }}
+
+{# as a filter: #}
+{{ 'foo'|fn('some_function', 'bar') }}
+{{ 'foo'|fn('alias', 'bar') }}
 ```

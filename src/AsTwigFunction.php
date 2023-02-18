@@ -16,10 +16,10 @@ namespace Zenstruck\Twig;
  *
  * @readonly
  */
-#[\Attribute(\Attribute::TARGET_CLASS)]
-final class AsTwigService
+#[\Attribute(\Attribute::TARGET_FUNCTION)]
+final class AsTwigFunction
 {
-    public function __construct(public string $alias)
+    public function __construct(public ?string $alias = null)
     {
     }
 }

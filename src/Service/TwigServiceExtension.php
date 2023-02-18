@@ -28,6 +28,7 @@ final class TwigServiceExtension extends AbstractExtension
             new TwigFunction('service', [TwigServiceRuntime::class, 'get']),
             new TwigFunction('service_*', [TwigServiceRuntime::class, 'get']),
             new TwigFunction('parameter', [TwigServiceRuntime::class, 'parameter']),
+            new TwigFunction('fn', [TwigFunctionRuntime::class, 'call']),
         ];
     }
 
@@ -36,6 +37,7 @@ final class TwigServiceExtension extends AbstractExtension
         return [
             new TwigFilter('service', [TwigServiceRuntime::class, 'filter']),
             new TwigFilter('service_*', [TwigServiceRuntime::class, 'dynamicFilter']),
+            new TwigFilter('fn', [TwigFunctionRuntime::class, 'filter']),
         ];
     }
 }

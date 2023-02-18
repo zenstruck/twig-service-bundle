@@ -81,4 +81,14 @@ final class IntegrationTest extends KernelTestCase
 
         $this->assertSame("bar\n", $rendered);
     }
+
+    /**
+     * @test
+     */
+    public function fn_functions_and_filters(): void
+    {
+        $rendered = self::getContainer()->get('twig')->render('template7.html.twig');
+
+        $this->assertSame("first\nfirstfoobar\nsecond\nsecondfoobar\nthird\nthirdfoobar\nfirstfoo\nfirstfoobar\nsecondfoo\nsecondfoobar\nthirdfoo\nthirdfoobar\n", $rendered);
+    }
 }

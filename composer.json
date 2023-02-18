@@ -30,7 +30,10 @@
         "psr-4": { "Zenstruck\\Twig\\": "src/" }
     },
     "autoload-dev": {
-        "psr-4": { "Zenstruck\\Twig\\Tests\\": "tests/" }
+        "psr-4": { "Zenstruck\\Twig\\Tests\\": "tests/" },
+        "files": [
+            "tests/Fixture/functions.php"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true
