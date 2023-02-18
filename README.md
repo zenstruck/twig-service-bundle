@@ -116,3 +116,14 @@ escaped, use the `raw` filter:
 ```twig
 {{ url|service_image_transformer('square-200', 'watermark')|raw }}
 ```
+
+### Parameter Function
+
+You can access any service container parameter with the provided `parameter()`
+twig function:
+
+```twig
+{% for locale in parameter('kernel.enabled_locales') %}
+    {# ... #}
+{% endfor %}
+```

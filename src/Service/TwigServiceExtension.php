@@ -27,6 +27,7 @@ final class TwigServiceExtension extends AbstractExtension
         return [
             new TwigFunction('service', [TwigServiceRuntime::class, 'get']),
             new TwigFunction('service_*', [TwigServiceRuntime::class, 'get']),
+            new TwigFunction('parameter', [TwigServiceRuntime::class, 'parameter']),
         ];
     }
 
