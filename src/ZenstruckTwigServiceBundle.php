@@ -25,6 +25,8 @@ use Zenstruck\Twig\Service\TwigServiceRuntime;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
+ *
+ * @phpstan-import-type Function from TwigFunctionRuntime
  */
 final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInterface
 {
@@ -58,7 +60,7 @@ final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInt
             ->addTag('twig.service', ['alias' => TwigServiceRuntime::PARAMETER_BAG])
         ;
 
-        /** @var array<string,callable-string|array{0:string,1:string}> $userFunctions */
+        /** @var array<string,Function> $userFunctions */
         $userFunctions = [];
 
         foreach ($container->getDefinitions() as $id => $definition) {
@@ -81,6 +83,12 @@ final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInt
 
                 if (isset($userFunctions[$alias])) {
                     throw new LogicException(\sprintf('The function alias "%s" is already being used for "%s".', $alias, \is_string($userFunctions[$alias]) ? $userFunctions[$alias] : \implode('::', $userFunctions[$alias])));
+                }
+
+                if ($method->isStatic()) {
+                    $userFunctions[$alias] = [$class, $method->name];
+
+                    continue;
                 }
 
                 $addTag = true;

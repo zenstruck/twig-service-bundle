@@ -109,7 +109,7 @@ final class IntegrationTest extends KernelTestCase
     {
         $rendered = self::getContainer()->get('twig')->render('template9.html.twig');
 
-        $this->assertSame("method1\nmethod1foobar\nmethod2\nmethod2foobar\nmethod1foo\nmethod1foobar\nmethod2foo\nmethod2foobar\n", $rendered);
+        $this->assertSame("method1\nmethod1foobar\nmethod2\nmethod2foobar\nmethod3\nmethod3foobar\nmethod1foo\nmethod1foobar\nmethod2foo\nmethod2foobar\nmethod3foo\nmethod3foobar\n", $rendered);
     }
 
     /**
@@ -119,6 +119,6 @@ final class IntegrationTest extends KernelTestCase
     {
         $rendered = self::getContainer()->get('twig')->render('template10.html.twig');
 
-        $this->assertSame("method1\nmethod1foobar\nmethod2\nmethod2foobar\nmethod1foo\nmethod1foobar\nmethod2foo\nmethod2foobar\n", $rendered);
+        $this->assertSame("method1\nmethod1foobar\nmethod2\nmethod2foobar\nmethod3\nmethod3foobar\nmethod1foo\nmethod1foobar\nmethod2foo\nmethod2foobar\nmethod3foo\nmethod3foobar\n", $rendered);
     }
 }

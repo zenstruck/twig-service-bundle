@@ -17,11 +17,13 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @internal
+ *
+ * @phpstan-type Function = callable-string|(array{0:class-string,1:string}&callable)|array{0:string,1:string}
  */
 final class TwigFunctionRuntime
 {
     /**
-     * @param array<string,callable-string|array{0:string,1:string}> $functions
+     * @param array<string,Function> $functions
      */
     public function __construct(private ServiceLocator $container, private array $functions)
     {
@@ -33,7 +35,7 @@ final class TwigFunctionRuntime
             throw new \RuntimeException(\sprintf('Twig function with alias "%s" is not registered. Registered functions: "%s"', $alias, \implode(', ', \array_keys($this->functions))));
         }
 
-        if (\is_string($callable)) {
+        if (\is_callable($callable)) {
             return $callable(...$args);
         }
 
