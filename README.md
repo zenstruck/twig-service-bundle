@@ -13,13 +13,8 @@ With #2, there is a bit of boilerplate and if done incorrectly (ie not using a
 or [service proxy](https://symfony.com/doc/current/service_container/lazy_services.html)
 for heavy services), it could lead to performance issues.
 
-This bundle provides a way to mark any service as a _twig service_. You can then
-access this service _lazily_ in any template via an _alias_.
-
-While you can mark any service as a _twig service_, it is not recommended to mark services
-that have nothing to do with templating (ie repositories) as such. You can think of twig
-services as _lightweight-lazy-twig-extension-functions_ whose purpose is to break up/simplify
-large custom twig extensions.
+This bundle provides an easy way to make functions, static methods, service methods, and
+even full service objects available in your twig templates.
 
 ## Installation
 
@@ -34,101 +29,9 @@ composer require zenstruck/twig-service-bundle
 > **Note**: the output for the following functions/filters will be escaped. If your
 > function\filter returns html that you don't want escaped, use the `|raw` filter.
 
-### Service Function
-
-Mark any service you'd like to make available in twig templates with the `#[AsTwigService]`
-attribute which requires an _alias_:
-
-```php
-namespace App\Twig\Service;
-
-// ...
-use Zenstruck\Twig\AsTwigService;
-
-#[AsTwigService(alias: 'posts')]
-class PostService
-{
-    private PostRepository $repo;
-
-    public function __construct(PostRepository $repo)
-    {
-        $this->repo = $repo;
-    }
-
-    /**
-     * @return Post[]
-     */
-    public function latestPosts(int $number = 10): array
-    {
-        return $this->repo->findLatestPosts($number);
-    }
-}
-```
-
-You're now ready to access the service in any twig template:
-
-```twig
-{% for post in service('posts').latestPosts(5) %}
-    {# ... #}
-{% endfor %}
-```
-
-Each service alias is made available as a _dynamic_ function. The following is equivalent
-to above:
-
-```twig
-{% for post in service_posts().latestPosts(5) %}
-    {# ... #}
-{% endfor %}
-```
-
-### Invokable Filters
-
-You can turn any twig service into a twig filter by having it implement `__invoke()`:
-
-```php
-namespace App\Twig\Service;
-
-// ...
-use Zenstruck\Twig\AsTwigService;
-
-#[AsTwigService(alias: 'image_transformer')]
-class ImageTransformer
-{
-    public function __invoke(string $imageUrl, string ...$transformations): string
-    {
-        // adds transformation to url and returns new url
-    }
-}
-```
-
-In your template, use the `service` twig filter:
-
-```twig
-{{ url|service('image_transformer', 'square-200', 'watermark') }}
-```
-
-Each service alias is made available as a _dynamic_ filter. The following is equivalent
-to above:
-
-```twig
-{{ url|service_image_transformer('square-200', 'watermark') }}
-```
-
-### Parameter Function
-
-You can access any service container parameter with the provided `parameter()`
-twig function:
-
-```twig
-{% for locale in parameter('kernel.enabled_locales') %}
-    {# ... #}
-{% endfor %}
-```
-
 ### Service Methods as Functions/Filters
 
-You can any public method in your configured services with the `#[AsTwigFunction]`
+You can mark any public method in your configured services with the `#[AsTwigFunction]`
 attribute to make them available within your twig templates with the `fn()` twig
 function/filter:
 
@@ -140,7 +43,7 @@ class SomeService
 {
     // ...
 
-    #[AsTwigFunction] // will be available as "some_function" in twig
+    #[AsTwigFunction] // will be available as "someMethod" in twig
     public function someMethod($arg1, $arg2): string
     {
         // ...
@@ -225,20 +128,118 @@ _Dynamic_ functions/filters are made available. The following is equivalent to a
 
 #### 3rd-Party Functions/Filters
 
-If you need to make functions/static methods available in your twig templates
-for code you do not controller (ie internal PHP functions/3rd party package),
-you can configure these in the bundle config:
+If you need to make functions, static/service methods available in your twig templates
+for code you do not control (ie internal PHP functions/3rd party package), you
+can configure these in the bundle config:
 
 ```yaml
 zenstruck_twig_service:
     functions:
         - strlen # available as "fn_strlen()" in twig
+        - [service.id, serviceMethod] # available as "fn_serviceMethod()" in twig
         - [Some\Class, somePublicStaticMethod] # available as "fn_somePublicStaticMethod()" in twig
 
     # use the array key to customize the name
     functions:
         len: strlen # available as "fn_len()" in twig
+        custom: [service.id, serviceMethod] # available as "fn_custom()" in twig
         alias: [Some\Class, somePublicStaticMethod] # available as "fn_alias()" in twig
+```
+
+### Service Function
+
+Mark any service you'd like to make available in twig templates with the `#[AsTwigService]`.
+
+> **Note**: While you can mark any service as a _twig service_, it is not recommended to mark services
+> that have nothing to do with templating (ie repositories) as such. You can think of twig
+> services as _lightweight-lazy-twig-extension-functions_ whose purpose is to break up/simplify
+> large custom twig extensions.
+
+```php
+namespace App\Twig\Service;
+
+// ...
+use Zenstruck\Twig\AsTwigService;
+
+#[AsTwigService(alias: 'posts')]
+class PostService
+{
+    private PostRepository $repo;
+
+    public function __construct(PostRepository $repo)
+    {
+        $this->repo = $repo;
+    }
+
+    /**
+     * @return Post[]
+     */
+    public function latestPosts(int $number = 10): array
+    {
+        return $this->repo->findLatestPosts($number);
+    }
+}
+```
+
+You're now ready to access the service in any twig template:
+
+```twig
+{% for post in service('posts').latestPosts(5) %}
+    {# ... #}
+{% endfor %}
+```
+
+Each service alias is made available as a _dynamic_ function. The following is equivalent
+to above:
+
+```twig
+{% for post in service_posts().latestPosts(5) %}
+    {# ... #}
+{% endfor %}
+```
+
+### Invokable Service Filters
+
+You can turn any twig service into a twig filter by having it implement `__invoke()`:
+
+```php
+namespace App\Twig\Service;
+
+// ...
+use Zenstruck\Twig\AsTwigService;
+
+#[AsTwigService(alias: 'image_transformer')]
+class ImageTransformer
+{
+    public function __invoke(string $imageUrl, string ...$transformations): string
+    {
+        // adds transformation to url and returns new url
+    }
+}
+```
+
+In your template, use the `service` twig filter:
+
+```twig
+{{ url|service('image_transformer', 'square-200', 'watermark') }}
+```
+
+Each service alias is made available as a _dynamic_ filter. The following is equivalent
+to above:
+
+```twig
+{{ url|service_image_transformer('square-200', 'watermark') }}
+```
+
+### Parameter Function
+
+You can access any service container parameter with the provided `parameter()`
+twig function:
+
+```twig
+{% for locale in parameter('kernel.enabled_locales') %}
+    {# ... #}
+{% endfor %}
 ```
 
 ## Full Default Bundle Configuration

@@ -1,6 +1,6 @@
 {
     "name": "zenstruck/twig-service-bundle",
-    "description": "Access Symfony services from within your twig templates.",
+    "description": "Make functions, static methods, Symfony service methods available in your twig templates.",
     "homepage": "https://github.com/zenstruck/twig-service-bundle",
     "type": "symfony-bundle",
     "license": "MIT",
