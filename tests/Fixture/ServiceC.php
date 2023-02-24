@@ -29,4 +29,10 @@ final class ServiceC
     {
         return 'method2'.\implode('', $args);
     }
+
+    #[AsTwigFunction]
+    public static function method3(string ...$args): string
+    {
+        return 'method3'.\implode('', $args);
+    }
 }

@@ -9,13 +9,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Twig;
-
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+namespace Zenstruck\Twig\Tests\Fixture;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class ZenstruckTwigServiceBundle extends Bundle
+final class ServiceD
 {
+    public function serviceMethod1(string ...$args): string
+    {
+        return 'serviceMethod1'.\implode('', $args);
+    }
+
+    public function serviceMethod2(string ...$args): string
+    {
+        return 'serviceMethod2'.\implode('', $args);
+    }
 }

@@ -2,7 +2,11 @@
 {{ fn('method1', 'foo', 'bar') }}
 {{ fn('custom_method') }}
 {{ fn('custom_method', 'foo', 'bar') }}
+{{ fn('method3') }}
+{{ fn('method3', 'foo', 'bar') }}
 {{ 'foo'|fn('method1') }}
 {{ 'foo'|fn('method1', 'bar') }}
 {{ 'foo'|fn('custom_method') }}
 {{ 'foo'|fn('custom_method', 'bar') }}
+{{ 'foo'|fn('method3') }}
+{{ 'foo'|fn('method3', 'bar') }}

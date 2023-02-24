@@ -109,7 +109,7 @@ final class IntegrationTest extends KernelTestCase
     {
         $rendered = self::getContainer()->get('twig')->render('template9.html.twig');
 
-        $this->assertSame("method1\nmethod1foobar\nmethod2\nmethod2foobar\nmethod1foo\nmethod1foobar\nmethod2foo\nmethod2foobar\n", $rendered);
+        $this->assertSame("method1\nmethod1foobar\nmethod2\nmethod2foobar\nmethod3\nmethod3foobar\nmethod1foo\nmethod1foobar\nmethod2foo\nmethod2foobar\nmethod3foo\nmethod3foobar\n", $rendered);
     }
 
     /**
@@ -119,6 +119,56 @@ final class IntegrationTest extends KernelTestCase
     {
         $rendered = self::getContainer()->get('twig')->render('template10.html.twig');
 
-        $this->assertSame("method1\nmethod1foobar\nmethod2\nmethod2foobar\nmethod1foo\nmethod1foobar\nmethod2foo\nmethod2foobar\n", $rendered);
+        $this->assertSame("method1\nmethod1foobar\nmethod2\nmethod2foobar\nmethod3\nmethod3foobar\nmethod1foo\nmethod1foobar\nmethod2foo\nmethod2foobar\nmethod3foo\nmethod3foobar\n", $rendered);
+    }
+
+    /**
+     * @test
+     */
+    public function configured_fn_as_function_and_filter(): void
+    {
+        $rendered = self::getContainer()->get('twig')->render('template11.html.twig');
+
+        $this->assertSame(<<<EOF
+            3
+            foo
+            someMethod1foobar
+            someMethod2foobar
+            serviceMethod1foobar
+            serviceMethod2foobar
+            3
+            foo
+            someMethod1foobar
+            someMethod2foobar
+            serviceMethod1foobar
+            serviceMethod2foobar\n
+            EOF,
+            $rendered
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function configured_fn_as_dynamic_function_and_filter(): void
+    {
+        $rendered = self::getContainer()->get('twig')->render('template12.html.twig');
+
+        $this->assertSame(<<<EOF
+            3
+            foo
+            someMethod1foobar
+            someMethod2foobar
+            serviceMethod1foobar
+            serviceMethod2foobar
+            3
+            foo
+            someMethod1foobar
+            someMethod2foobar
+            serviceMethod1foobar
+            serviceMethod2foobar\n
+            EOF,
+            $rendered
+        );
     }
 }
