@@ -134,10 +134,14 @@ final class IntegrationTest extends KernelTestCase
             foo
             someMethod1foobar
             someMethod2foobar
+            serviceMethod1foobar
+            serviceMethod2foobar
             3
             foo
             someMethod1foobar
-            someMethod2foobar\n
+            someMethod2foobar
+            serviceMethod1foobar
+            serviceMethod2foobar\n
             EOF,
             $rendered
         );
@@ -155,10 +159,14 @@ final class IntegrationTest extends KernelTestCase
             foo
             someMethod1foobar
             someMethod2foobar
+            serviceMethod1foobar
+            serviceMethod2foobar
             3
             foo
             someMethod1foobar
-            someMethod2foobar\n
+            someMethod2foobar
+            serviceMethod1foobar
+            serviceMethod2foobar\n
             EOF,
             $rendered
         );

@@ -39,6 +39,18 @@ final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInt
         /** @var array<string,Function> $userFunctions */
         $userFunctions = $container->getParameter('zenstruck_twig_service.functions');
 
+        foreach ($userFunctions as $value) {
+            if (\is_callable($value)) {
+                continue;
+            }
+
+            $definition = $container->findDefinition($value[0]);
+
+            if (!$definition->hasTag('twig.service_method')) {
+                $definition->addTag('twig.service_method');
+            }
+        }
+
         $container->getParameterBag()->remove('zenstruck_twig_service.functions');
 
         foreach ($container->getDefinitions() as $id => $definition) {

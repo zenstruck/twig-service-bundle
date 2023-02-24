@@ -50,6 +50,8 @@ final class Kernel extends BaseKernel
                 'trimalias' => 'trim',
                 [SomeClass::class, 'someMethod1'],
                 'some_method_2' => [SomeClass::class, 'someMethod2'],
+                [ServiceD::class, 'serviceMethod1'],
+                'service_method_2' => [ServiceD::class, 'serviceMethod2'],
             ],
         ]);
 
@@ -57,5 +59,6 @@ final class Kernel extends BaseKernel
         $c->register(ServiceA::class)->setAutoconfigured(true)->setAutowired(true);
         $c->register(ServiceB::class)->setAutoconfigured(true)->setAutowired(true);
         $c->register(ServiceC::class)->setAutoconfigured(true)->setAutowired(true);
+        $c->register(ServiceD::class)->setAutoconfigured(true)->setAutowired(true);
     }
 }
