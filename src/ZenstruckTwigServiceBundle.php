@@ -11,16 +11,11 @@
 
 namespace Zenstruck\Twig;
 
-use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
-use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
-use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Zenstruck\Twig\Service\TwigFunctionRuntime;
-use Zenstruck\Twig\Service\TwigServiceExtension;
 use Zenstruck\Twig\Service\TwigServiceRuntime;
 
 /**
@@ -32,25 +27,6 @@ final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInt
 {
     public function build(ContainerBuilder $container): void
     {
-        $container->registerAttributeForAutoconfiguration(
-            AsTwigService::class,
-            static function(ChildDefinition $definition, AsTwigService $attribute) {
-                $definition->addTag('twig.service', ['alias' => $attribute->alias]);
-            }
-        );
-
-        $container->register('.zenstruck.twig.service_extension', TwigServiceExtension::class)
-            ->addTag('twig.extension')
-        ;
-        $container->register('.zenstruck.twig.service_runtime', TwigServiceRuntime::class)
-            ->addArgument(new ServiceLocatorArgument(new TaggedIteratorArgument('twig.service', 'alias', needsIndexes: true)))
-            ->addTag('twig.runtime')
-        ;
-        $container->register('.zenstruck.twig.function_runtime', TwigFunctionRuntime::class)
-            ->addArgument(new ServiceLocatorArgument(new TaggedIteratorArgument('twig.service_method', 'alias', needsIndexes: true)))
-            ->addTag('twig.runtime')
-        ;
-
         $container->addCompilerPass($this);
     }
 
@@ -61,7 +37,9 @@ final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInt
         ;
 
         /** @var array<string,Function> $userFunctions */
-        $userFunctions = [];
+        $userFunctions = $container->getParameter('zenstruck_twig_service.functions');
+
+        $container->getParameterBag()->remove('zenstruck_twig_service.functions');
 
         foreach ($container->getDefinitions() as $id => $definition) {
             if (!$class = $definition->getClass()) {
@@ -119,10 +97,5 @@ final class ZenstruckTwigServiceBundle extends Bundle implements CompilerPassInt
         $container->getDefinition('.zenstruck.twig.function_runtime')
             ->addArgument($userFunctions)
         ;
-    }
-
-    public function getContainerExtension(): ?ExtensionInterface
-    {
-        return null;
     }
 }

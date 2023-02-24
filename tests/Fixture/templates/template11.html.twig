@@ -1,0 +1,8 @@
+{{ fn('strlen', 'foo') }}
+{{ fn('trimalias', '-foo-', '-') }}
+{{ fn('someMethod1', 'foo', 'bar') }}
+{{ fn('some_method_2', 'foo', 'bar') }}
+{{ 'foo'|fn('strlen') }}
+{{ 'foo'|fn('trimalias', '-') }}
+{{ 'foo'|fn('someMethod1', 'bar') }}
+{{ 'foo'|fn('some_method_2', 'bar') }}

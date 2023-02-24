@@ -222,3 +222,34 @@ _Dynamic_ functions/filters are made available. The following is equivalent to a
 {{ 'foo'|fn_some_function('bar') }}
 {{ 'foo'|fn_alias('bar') }}
 ```
+
+#### 3rd-Party Functions/Filters
+
+If you need to make functions/static methods available in your twig templates
+for code you do not controller (ie internal PHP functions/3rd party package),
+you can configure these in the bundle config:
+
+```yaml
+zenstruck_twig_service:
+    functions:
+        - strlen # available as "fn_strlen()" in twig
+        - [Some\Class, somePublicStaticMethod] # available as "fn_somePublicStaticMethod()" in twig
+
+    # use the array key to customize the name
+    functions:
+        len: strlen # available as "fn_len()" in twig
+        alias: [Some\Class, somePublicStaticMethod] # available as "fn_alias()" in twig
+```
+
+## Full Default Bundle Configuration
+
+```yaml
+zenstruck_twig_service:
+
+    # Callables to make available with fn() twig function/filter
+    functions:
+
+        # Examples:
+        0:                   strlen # available as "strlen"
+        alias:               [Some\Class, somePublicStaticMethod] # available as "alias"
+```

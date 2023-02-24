@@ -44,6 +44,14 @@ final class Kernel extends BaseKernel
         $c->loadFromExtension('twig', [
             'default_path' => '%kernel.project_dir%/tests/Fixture/templates',
         ]);
+        $c->loadFromExtension('zenstruck_twig_service', [
+            'functions' => [
+                'strlen',
+                'trimalias' => 'trim',
+                [SomeClass::class, 'someMethod1'],
+                'some_method_2' => [SomeClass::class, 'someMethod2'],
+            ],
+        ]);
 
         $c->setParameter('foo', 'bar');
         $c->register(ServiceA::class)->setAutoconfigured(true)->setAutowired(true);
