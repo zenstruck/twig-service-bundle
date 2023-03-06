@@ -171,4 +171,15 @@ final class IntegrationTest extends KernelTestCase
             $rendered
         );
     }
+
+    /**
+     * @test
+     */
+    public function invalid_function_alias(): void
+    {
+        $this->expectException(RuntimeError::class);
+        $this->expectExceptionMessage('Twig function with alias "invalid" is not registered. Registered functions: "strlen, trimalias, someMethod1, some_method_2, serviceMethod1, service_method_2, method1, custom_method, method3');
+
+        self::getContainer()->get('twig')->render('template13.html.twig');
+    }
 }

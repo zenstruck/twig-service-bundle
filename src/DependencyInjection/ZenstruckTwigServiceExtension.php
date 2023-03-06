@@ -156,6 +156,8 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
 
             if (\is_string($value) && \is_callable($value)) {
                 $functions[(new \ReflectionFunction($value))->getShortName()] = $value;
+
+                continue;
             }
 
             $functions[$value[1] ?? throw new \LogicException('Invalid callable.')] = $value;
