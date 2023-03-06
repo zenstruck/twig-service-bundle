@@ -76,7 +76,7 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
             $definition = $container->findDefinition($value[0]);
 
             if (!$definition->hasTag('twig.service_method')) {
-                $definition->addTag('twig.service_method');
+                $definition->addTag('twig.service_method', ['alias' => $value[0]]);
             }
         }
 
