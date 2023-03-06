@@ -19,9 +19,11 @@ use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 use Zenstruck\Twig\AsTwigFunction;
 use Zenstruck\Twig\AsTwigService;
+use Zenstruck\Twig\Command\ListCommand;
 use Zenstruck\Twig\Service\TwigFunctionRuntime;
 use Zenstruck\Twig\Service\TwigServiceExtension;
 use Zenstruck\Twig\Service\TwigServiceRuntime;
@@ -76,7 +78,7 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
             $definition = $container->findDefinition($value[0]);
 
             if (!$definition->hasTag('twig.service_method')) {
-                $definition->addTag('twig.service_method');
+                $definition->addTag('twig.service_method', ['alias' => $value[0]]);
             }
         }
 
@@ -156,6 +158,8 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
 
             if (\is_string($value) && \is_callable($value)) {
                 $functions[(new \ReflectionFunction($value))->getShortName()] = $value;
+
+                continue;
             }
 
             $functions[$value[1] ?? throw new \LogicException('Invalid callable.')] = $value;
@@ -181,5 +185,14 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
             ->addArgument(new ServiceLocatorArgument(new TaggedIteratorArgument('twig.service_method', 'alias', needsIndexes: true)))
             ->addTag('twig.runtime')
         ;
+
+        if ($container->getParameter('kernel.debug')) {
+            $container->register('.zenstruck.twig.list_command', ListCommand::class)
+                ->setArguments([
+                    new Reference('.zenstruck.twig.service_runtime'), new Reference('.zenstruck.twig.function_runtime'),
+                ])
+                ->addTag('console.command')
+            ;
+        }
     }
 }

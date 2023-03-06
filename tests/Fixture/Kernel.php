@@ -17,6 +17,7 @@ use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Zenstruck\Twig\ZenstruckTwigServiceBundle;
 
 /**
@@ -52,6 +53,7 @@ final class Kernel extends BaseKernel
                 'some_method_2' => [SomeClass::class, 'someMethod2'],
                 [ServiceD::class, 'serviceMethod1'],
                 'service_method_2' => [ServiceD::class, 'serviceMethod2'],
+                'router' => ['router', 'generate'],
             ],
         ]);
 
@@ -60,5 +62,10 @@ final class Kernel extends BaseKernel
         $c->register(ServiceB::class)->setAutoconfigured(true)->setAutowired(true);
         $c->register(ServiceC::class)->setAutoconfigured(true)->setAutowired(true);
         $c->register(ServiceD::class)->setAutoconfigured(true)->setAutowired(true);
+    }
+
+    protected function configureRoutes(RoutingConfigurator $routes): void
+    {
+        $routes->add('route', '/some/path');
     }
 }

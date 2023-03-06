@@ -136,12 +136,14 @@ final class IntegrationTest extends KernelTestCase
             someMethod2foobar
             serviceMethod1foobar
             serviceMethod2foobar
+            /some/path
             3
             foo
             someMethod1foobar
             someMethod2foobar
             serviceMethod1foobar
-            serviceMethod2foobar\n
+            serviceMethod2foobar
+            /some/path\n
             EOF,
             $rendered
         );
@@ -161,14 +163,27 @@ final class IntegrationTest extends KernelTestCase
             someMethod2foobar
             serviceMethod1foobar
             serviceMethod2foobar
+            /some/path
             3
             foo
             someMethod1foobar
             someMethod2foobar
             serviceMethod1foobar
-            serviceMethod2foobar\n
+            serviceMethod2foobar
+            /some/path\n
             EOF,
             $rendered
         );
+    }
+
+    /**
+     * @test
+     */
+    public function invalid_function_alias(): void
+    {
+        $this->expectException(RuntimeError::class);
+        $this->expectExceptionMessage('Twig function with alias "invalid" is not registered. Registered functions: "strlen, trimalias, someMethod1, some_method_2, serviceMethod1, service_method_2, router, method1, custom_method, method3');
+
+        self::getContainer()->get('twig')->render('template13.html.twig');
     }
 }
