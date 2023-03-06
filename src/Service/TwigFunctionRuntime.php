@@ -46,4 +46,17 @@ final class TwigFunctionRuntime
     {
         return $this->call($alias, $value, ...$args);
     }
+
+    /**
+     * @return array<string,Function>
+     */
+    public function functions(): array
+    {
+        return $this->functions;
+    }
+
+    public function container(): ServiceLocator
+    {
+        return $this->container;
+    }
 }

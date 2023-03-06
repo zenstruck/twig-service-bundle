@@ -242,6 +242,45 @@ twig function:
 {% endfor %}
 ```
 
+### `zenstruck:twig-service:list` Command
+
+Use this command to list all functions/filters/services configured
+by this bundle and available in your twig templates.
+
+> **Note**: This command is only available when `debug: true`.
+
+```
+bin/console zenstruck:twig-service:list
+
+Available Functions/Filters
+---------------------------
+
+ // As function: call with fn('{alias}', {...args}) or fn_{alias}({...args})
+
+ // As filter: use as {value}|fn('{alias}', {...args}) or {value}|fn_{alias}({...args})
+
+ ---------- ---------------------------------------------
+  Alias      Callable
+ ---------- ---------------------------------------------
+  strlen     strlen
+  generate   @router->generate()
+ ---------- ---------------------------------------------
+
+Available Services
+------------------
+
+ // Access via service('{alias}') or service_{alias}()
+
+ // If invokable, use as {value}|service('{alias}', {...args}) or {value}|service_{alias}({...args})
+
+ ------- -------------------- ------------
+  Alias   Service              Invokable?
+ ------- -------------------- ------------
+  foo     App\SomeService      yes
+  bar     App\AnotherService   no
+ ------- -------------------- ------------
+```
+
 ## Full Default Bundle Configuration
 
 ```yaml

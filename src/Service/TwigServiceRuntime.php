@@ -56,4 +56,12 @@ final class TwigServiceRuntime
     {
         return $this->container->get(self::PARAMETER_BAG)->get($name);
     }
+
+    /**
+     * @return array<string,string>
+     */
+    public function all(): array
+    {
+        return $this->container->getProvidedServices();
+    }
 }
