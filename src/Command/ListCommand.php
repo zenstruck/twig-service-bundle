@@ -33,7 +33,7 @@ final class ListCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $functions = $this->functions->functions();
+        $functions = \array_keys($this->functions->functions()->getProvidedServices());
         $services = $this->services->all();
 
         unset($services[TwigServiceRuntime::PARAMETER_BAG]);
@@ -50,27 +50,7 @@ final class ListCommand extends Command
             $io->comment("As filter: use as <info>{value}|fn('{alias}', {...args})</info> or <info>{value}|fn_{alias}({...args})</info>");
             $io->table(
                 ['Alias', 'Callable'],
-                \array_map(function(string|array $value, string $key) {
-                    if (\is_string($value)) {
-                        return [$key, $value];
-                    }
-
-                    $class = $value[0];
-
-                    if (!\class_exists($class) && !\interface_exists($class)) {
-                        $class = '@'.$class;
-                    }
-
-                    return [
-                        $key,
-                        \sprintf(
-                            '%s%s%s()',
-                            $class,
-                            $this->functions->container()->has($value[0]) ? '->' : '::',
-                            $value[1]
-                        ),
-                    ];
-                }, $functions, \array_keys($functions))
+                \array_map(fn(string $alias) => [$alias, $this->functions->functions()->get($alias)], $functions)
             );
         }
 

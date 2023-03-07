@@ -30,7 +30,7 @@ final class ListCommandTest extends KernelTestCase
             ->assertOutputContains('Available Functions/Filters')
             ->assertOutputContains('strlen             strlen')
             ->assertOutputContains('someMethod1        Zenstruck\Twig\Tests\Fixture\SomeClass::someMethod1()')
-            ->assertOutputContains('router             @router->generate()')
+            ->assertOutputContains('router             Symfony\Bundle\FrameworkBundle\Routing\Router->generate()')
             ->assertOutputContains('method1            Zenstruck\Twig\Tests\Fixture\ServiceC->method1()')
             ->assertOutputContains('second             App\second')
             ->assertOutputContains('Available Services')
