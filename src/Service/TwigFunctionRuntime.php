@@ -11,35 +11,27 @@
 
 namespace Zenstruck\Twig\Service;
 
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @internal
- *
- * @phpstan-type Function = callable-string|(array{0:class-string,1:string}&callable)|array{0:string,1:string}
  */
 final class TwigFunctionRuntime
 {
-    /**
-     * @param array<string,Function> $functions
-     */
-    public function __construct(private ServiceLocator $container, private array $functions)
+    public function __construct(private ServiceLocator $functions)
     {
     }
 
     public function call(string $alias, mixed ...$args): mixed
     {
-        if (!$callable = $this->functions[$alias] ?? null) {
-            throw new \RuntimeException(\sprintf('Twig function with alias "%s" is not registered. Registered functions: "%s"', $alias, \implode(', ', \array_keys($this->functions))));
+        try {
+            return $this->functions->get($alias)(...$args);
+        } catch (NotFoundExceptionInterface $e) {
+            throw new \RuntimeException(\sprintf('Twig function with alias "%s" is not registered. Registered functions: "%s"', $alias, \implode(', ', \array_keys($this->functions->getProvidedServices()))), previous: $e);
         }
-
-        if (\is_callable($callable)) {
-            return $callable(...$args);
-        }
-
-        return $this->container->get($callable[0])->{$callable[1]}(...$args);
     }
 
     public function filter(mixed $value, string $alias, mixed ...$args): mixed
@@ -47,16 +39,8 @@ final class TwigFunctionRuntime
         return $this->call($alias, $value, ...$args);
     }
 
-    /**
-     * @return array<string,Function>
-     */
-    public function functions(): array
+    public function functions(): ServiceLocator
     {
         return $this->functions;
-    }
-
-    public function container(): ServiceLocator
-    {
-        return $this->container;
     }
 }

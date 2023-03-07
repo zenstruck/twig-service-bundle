@@ -181,9 +181,23 @@ final class IntegrationTest extends KernelTestCase
      */
     public function invalid_function_alias(): void
     {
-        $this->expectException(RuntimeError::class);
-        $this->expectExceptionMessage('Twig function with alias "invalid" is not registered. Registered functions: "strlen, trimalias, someMethod1, some_method_2, serviceMethod1, service_method_2, router, method1, custom_method, method3');
+        try {
+            self::getContainer()->get('twig')->render('template13.html.twig');
+        } catch (RuntimeError $e) {
+            $message = $e->getMessage();
 
-        self::getContainer()->get('twig')->render('template13.html.twig');
+            $this->assertStringContainsString('Twig function with alias "invalid" is not registered. Registered functions: ', $message);
+            $this->assertStringContainsString('first', $message);
+            $this->assertStringContainsString('custom_third', $message);
+            $this->assertStringContainsString('method1', $message);
+            $this->assertStringContainsString('custom_method', $message);
+            $this->assertStringContainsString('some_method_2', $message);
+            $this->assertStringContainsString('strlen', $message);
+            $this->assertStringContainsString('router', $message);
+
+            return;
+        }
+
+        $this->fail('Exception not thrown.');
     }
 }
