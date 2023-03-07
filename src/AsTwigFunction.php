@@ -19,7 +19,11 @@ namespace Zenstruck\Twig;
 #[\Attribute(\Attribute::TARGET_FUNCTION | \Attribute::TARGET_METHOD)]
 final class AsTwigFunction
 {
-    public function __construct(public ?string $alias = null)
-    {
+    public const THROW = '__throw';
+
+    public function __construct(
+        public ?string $alias = null,
+        public mixed $onExceptionReturn = self::THROW,
+    ) {
     }
 }

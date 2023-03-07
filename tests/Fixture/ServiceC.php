@@ -35,4 +35,16 @@ final class ServiceC
     {
         return 'method3'.\implode('', $args);
     }
+
+    #[AsTwigFunction(onExceptionReturn: 'error!')]
+    public static function errorMethod1(): string
+    {
+        throw new \Exception('ERROR!');
+    }
+
+    #[AsTwigFunction(onExceptionReturn: null)]
+    public function errorMethod2(): string
+    {
+        throw new \Exception('ERROR!');
+    }
 }

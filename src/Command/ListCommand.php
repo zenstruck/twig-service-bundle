@@ -16,6 +16,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Zenstruck\Twig\AsTwigFunction;
+use Zenstruck\Twig\Service\Invokable;
 use Zenstruck\Twig\Service\TwigFunctionRuntime;
 use Zenstruck\Twig\Service\TwigServiceRuntime;
 
@@ -49,8 +51,27 @@ final class ListCommand extends Command
             $io->comment("As function: call with <info>fn('{alias}', {...args})</info> or <info>fn_{alias}({...args})</info>");
             $io->comment("As filter: use as <info>{value}|fn('{alias}', {...args})</info> or <info>{value}|fn_{alias}({...args})</info>");
             $io->table(
-                ['Alias', 'Callable'],
-                \array_map(fn(string $alias) => [$alias, $this->functions->functions()->get($alias)], $functions)
+                ['Alias', 'Callable', 'On Error?'],
+                \array_map(
+                    function(string $alias) {
+                        /** @var Invokable $invokable */
+                        $invokable = $this->functions->functions()->get($alias);
+                        $onReturn = $invokable->onExceptionReturn();
+
+                        return [
+                            $alias,
+                            $invokable,
+                            match (true) {
+                                AsTwigFunction::THROW === $onReturn => '(throw)',
+                                \is_string($onReturn) => \sprintf('"%s"', $onReturn),
+                                \is_bool($onReturn) => $onReturn ? 'true' : 'false',
+                                \is_scalar($onReturn) => $onReturn,
+                                default => \get_debug_type($onReturn),
+                            },
+                        ];
+                    },
+                    $functions
+                )
             );
         }
 
