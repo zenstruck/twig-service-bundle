@@ -79,7 +79,7 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
         }
 
         foreach ($container->getDefinitions() as $id => $definition) {
-            if ($definition->hasTag('container.excluded')) {
+            if ($definition->hasTag('container.excluded') || $definition->isAbstract() || $definition->isSynthetic()) {
                 continue;
             }
 
