@@ -87,7 +87,11 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
                 continue;
             }
 
-            if (!\class_exists($class)) {
+            try {
+                if (!\class_exists($class)) {
+                    continue;
+                }
+            } catch (\Throwable) {
                 continue;
             }
 
