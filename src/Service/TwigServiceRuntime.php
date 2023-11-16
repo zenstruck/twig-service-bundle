@@ -12,7 +12,7 @@
 namespace Zenstruck\Twig\Service;
 
 use Psr\Container\NotFoundExceptionInterface;
-use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Contracts\Service\ServiceProviderInterface;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -23,7 +23,10 @@ final class TwigServiceRuntime
 {
     public const PARAMETER_BAG = '__parameter_bag';
 
-    public function __construct(private ServiceLocator $container)
+    /**
+     * @param ServiceProviderInterface<object> $container
+     */
+    public function __construct(private ServiceProviderInterface $container)
     {
     }
 
@@ -54,7 +57,7 @@ final class TwigServiceRuntime
 
     public function parameter(string $name): mixed
     {
-        return $this->container->get(self::PARAMETER_BAG)->get($name);
+        return $this->container->get(self::PARAMETER_BAG)->get($name); // @phpstan-ignore-line
     }
 
     /**

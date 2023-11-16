@@ -12,7 +12,7 @@
 namespace Zenstruck\Twig\Service;
 
 use Psr\Container\NotFoundExceptionInterface;
-use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Contracts\Service\ServiceProviderInterface;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -21,7 +21,10 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
  */
 final class TwigFunctionRuntime
 {
-    public function __construct(private ServiceLocator $functions)
+    /**
+     * @param ServiceProviderInterface<callable> $functions
+     */
+    public function __construct(private ServiceProviderInterface $functions)
     {
     }
 
@@ -39,7 +42,10 @@ final class TwigFunctionRuntime
         return $this->call($alias, $value, ...$args);
     }
 
-    public function functions(): ServiceLocator
+    /**
+     * @return ServiceProviderInterface<callable>
+     */
+    public function functions(): ServiceProviderInterface
     {
         return $this->functions;
     }
