@@ -22,11 +22,13 @@ even full service objects available in your twig templates.
 composer require zenstruck/twig-service-bundle
 ```
 
-> **Note**: If not added automatically by `symfony/flex`, enable `ZenstruckTwigServiceBundle`.
+> [!NOTE]
+> If not added automatically by `symfony/flex`, enable `ZenstruckTwigServiceBundle`.
 
 ## Usage
 
-> **Note**: the output for the following functions/filters will be escaped. If your
+> [!NOTE]
+> The output for the following functions/filters will be escaped. If your
 > function\filter returns html that you don't want escaped, use the `|raw` filter.
 
 ### Service Methods as Functions/Filters
@@ -150,7 +152,8 @@ zenstruck_twig_service:
 
 Mark any service you'd like to make available in twig templates with the `#[AsTwigService]`.
 
-> **Note**: While you can mark any service as a _twig service_, it is not recommended to mark services
+> [!NOTE]
+> While you can mark any service as a _twig service_, it is not recommended to mark services
 > that have nothing to do with templating (ie repositories) as such. You can think of twig
 > services as _lightweight-lazy-twig-extension-functions_ whose purpose is to break up/simplify
 > large custom twig extensions.
@@ -247,7 +250,8 @@ twig function:
 Use this command to list all functions/filters/services configured
 by this bundle and available in your twig templates.
 
-> **Note**: This command is only available when `debug: true`.
+> [!NOTE]
+> This command is only available when `debug: true`.
 
 ```
 bin/console zenstruck:twig-service:list
