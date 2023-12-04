@@ -53,7 +53,10 @@ final class Kernel extends BaseKernel
                 'some_method_2' => [SomeClass::class, 'someMethod2'],
                 [ServiceD::class, 'serviceMethod1'],
                 'service_method_2' => [ServiceD::class, 'serviceMethod2'],
-                'router' => ['router', 'generate'],
+                'router' => [
+                    'callable' => ['router', 'generate'],
+                    'on_exception_return' => 'error!',
+                ],
             ],
         ]);
 

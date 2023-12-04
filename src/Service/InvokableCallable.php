@@ -24,9 +24,11 @@ final class InvokableCallable extends Invokable
     /**
      * @param callable-string|(array{0:class-string,string}&callable) $callable
      */
-    public function __construct(callable $callable)
+    public function __construct(mixed $onExceptionReturn, callable $callable)
     {
         $this->callable = $callable;
+
+        parent::__construct($onExceptionReturn);
     }
 
     public function __toString(): string

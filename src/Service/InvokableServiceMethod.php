@@ -21,13 +21,15 @@ final class InvokableServiceMethod extends Invokable
     /** @var array{0:object,string}&callable */
     private $callable;
 
-    public function __construct(object $service, string $method)
+    public function __construct(mixed $onExceptionReturn, object $service, string $method)
     {
         if (!\is_callable($callable = [$service, $method])) {
             throw new \InvalidArgumentException('not callable...');
         }
 
         $this->callable = $callable;
+
+        parent::__construct($onExceptionReturn);
     }
 
     public function __toString(): string

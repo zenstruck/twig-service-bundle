@@ -11,6 +11,8 @@
 
 namespace Zenstruck\Twig\Service;
 
+use Zenstruck\Twig\AsTwigFunction;
+
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  *
@@ -18,9 +20,26 @@ namespace Zenstruck\Twig\Service;
  */
 abstract class Invokable implements \Stringable
 {
+    public function __construct(private mixed $onExceptionReturn)
+    {
+    }
+
     final public function __invoke(mixed ...$args): mixed
     {
-        return $this->callable()(...$args);
+        try {
+            return $this->callable()(...$args);
+        } catch (\Exception $e) {
+            if (AsTwigFunction::THROW === $this->onExceptionReturn) {
+                throw $e;
+            }
+
+            return $this->onExceptionReturn;
+        }
+    }
+
+    final public function onExceptionReturn(): mixed
+    {
+        return $this->onExceptionReturn;
     }
 
     abstract public function callable(): callable;

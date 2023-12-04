@@ -31,7 +31,9 @@ composer require zenstruck/twig-service-bundle
 > The output for the following functions/filters will be escaped. If your
 > function\filter returns html that you don't want escaped, use the `|raw` filter.
 
-### Service Methods as Functions/Filters
+### Twig Functions/Filters
+
+#### Service Methods as Functions/Filters
 
 You can mark any public method in your configured services with the `#[AsTwigFunction]`
 attribute to make them available within your twig templates with the `fn()` twig
@@ -83,7 +85,7 @@ _Dynamic_ functions/filters are made available. The following is equivalent to a
 {{ 'foo'|fn_alias('bar') }}
 ```
 
-### User Defined as Functions/Filters
+#### User Defined as Functions/Filters
 
 You can mark any of your custom functions with the `#[AsTwigFunction]` attribute
 to make them available within your twig templates with the `fn()` twig function\filter:
@@ -128,7 +130,7 @@ _Dynamic_ functions/filters are made available. The following is equivalent to a
 {{ 'foo'|fn_alias('bar') }}
 ```
 
-#### 3rd-Party Functions/Filters
+##### 3rd-Party Functions/Filters
 
 If you need to make functions, static/service methods available in your twig templates
 for code you do not control (ie internal PHP functions/3rd party package), you
@@ -148,7 +150,38 @@ zenstruck_twig_service:
         alias: [Some\Class, somePublicStaticMethod] # available as "fn_alias()" in twig
 ```
 
-### Service Function
+#### Catching Exceptions
+
+By default, when executing a function/filter and an exception is thrown, it is thrown _as normal_.
+You can set a value to be returned instead when this happens in your `#[AsTwigFunction]`
+attribute:
+
+```php
+use Zenstruck\Twig\AsTwigFunction;
+
+#[AsTwigFunction(onExceptionReturn: '')]
+function some_function($arg1, $arg2): string
+{
+    if ($someCondition) {
+        throw new \RuntimeException('something is wrong...'); // when using in twig, will return ''
+    }
+}
+```
+
+For functions/filters defined in your config, you can define this behaviour with the
+`on_exception_return` option:
+
+```yaml
+zenstruck_twig_service:
+    functions:
+        alias1: # when used in twig and there is an exception, return null
+            callable: [service.id, serviceMethod]
+            on_exception_return: null
+```
+
+> **Note**: Non-exception errors such as `\TypeError`'s are still thrown.
+
+### Twig Services
 
 Mark any service you'd like to make available in twig templates with the `#[AsTwigService]`.
 
@@ -201,7 +234,7 @@ to above:
 {% endfor %}
 ```
 
-### Invokable Service Filters
+#### Invokable Service Filters
 
 You can turn any twig service into a twig filter by having it implement `__invoke()`:
 
@@ -234,7 +267,7 @@ to above:
 {{ url|service_image_transformer('square-200', 'watermark') }}
 ```
 
-### Parameter Function
+#### Parameter Function
 
 You can access any service container parameter with the provided `parameter()`
 twig function:
@@ -263,12 +296,12 @@ Available Functions/Filters
 
  // As filter: use as {value}|fn('{alias}', {...args}) or {value}|fn_{alias}({...args})
 
- ---------- ---------------------------------------------
-  Alias      Callable
- ---------- ---------------------------------------------
-  strlen     strlen
-  generate   @router->generate()
- ---------- ---------------------------------------------
+ ---------- --------------------- -----------
+  Alias      Callable              On Error?
+ ---------- --------------------- -----------
+  strlen     strlen                null
+  generate   @router->generate()   (throw)
+ ---------- --------------------- -----------
 
 Available Services
 ------------------
@@ -294,6 +327,16 @@ zenstruck_twig_service:
     functions:
 
         # Examples:
-        0:                   strlen # available as "strlen"
-        alias:               [Some\Class, somePublicStaticMethod] # available as "alias"
+        0:                   my_function # available as "my_function"
+        alias1:              [Some\Class, somePublicStaticMethod] # available as "alias1"
+        alias2:              { callable: [service_id, someMethod], on_exception_return: null } # available as "alias2", returns null on exception
+
+        # Prototype
+        alias:
+
+            # {function name}, [{class name}, {static method}], [{service id}, {method}]
+            callable:             ~ # Required
+
+            # The default value to return if the function throws an exception
+            on_exception_return:  __throw
 ```

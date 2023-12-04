@@ -200,4 +200,17 @@ final class IntegrationTest extends KernelTestCase
 
         $this->fail('Exception not thrown.');
     }
+
+    /**
+     * @test
+     */
+    public function error_catching(): void
+    {
+        $rendered = self::getContainer()->get('twig')->render('errors.html.twig');
+
+        $this->assertStringContainsString('Error1: "error!"', $rendered);
+        $this->assertStringContainsString('ErrorMethod1: "error!"', $rendered);
+        $this->assertStringContainsString('ErrorMethod2: ""', $rendered);
+        $this->assertStringContainsString('Routing missing route: "error!"', $rendered);
+    }
 }

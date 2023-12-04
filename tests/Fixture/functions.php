@@ -33,4 +33,16 @@ namespace App {
     {
         return 'third'.\implode('', $value);
     }
+
+    #[AsTwigFunction(onExceptionReturn: 'error!')]
+    function error1(): string
+    {
+        throw new \Exception('ERROR!');
+    }
+
+    #[AsTwigFunction(onExceptionReturn: null)]
+    function error2(string $value): string
+    {
+        return $value;
+    }
 }

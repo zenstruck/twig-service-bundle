@@ -36,6 +36,7 @@ use Zenstruck\Twig\Service\TwigServiceRuntime;
  * @internal
  *
  * @phpstan-type Function = callable-string|(array{0:class-string,1:string}&callable)|array{0:string,1:string}
+ * @phpstan-type FunctionContext = array{0:Function,1:mixed}
  */
 final class ZenstruckTwigServiceExtension extends ConfigurableExtension implements ConfigurationInterface, CompilerPassInterface
 {
@@ -47,11 +48,35 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
             ->children()
                 ->arrayNode('functions')
                     ->info('Callables to make available with fn() twig function/filter')
-                    ->example(['strlen', 'alias' => ['Some\Class', 'somePublicStaticMethod']])
-                    ->variablePrototype()
-                        ->validate()
-                            ->ifTrue(fn($v) => \is_object($v) || \is_object($v[0] ?? null))
-                            ->thenInvalid('Callable objects are not supported.')
+                    ->example([
+                        '0' => 'my_function',
+                        'alias1' => ['Some\Class', 'somePublicStaticMethod'],
+                        'alias2' => ['callable' => ['service_id', 'someMethod'], 'on_exception_return' => null],
+                    ])
+                    ->useAttributeAsKey('alias')
+                    ->arrayPrototype()
+                        ->beforeNormalization()
+                            ->ifString()
+                            ->then(fn($v) => ['callable' => $v])
+                        ->end()
+                        ->beforeNormalization()
+                            ->ifTrue(fn($v) => \is_array($v) && array_is_list($v))
+                            ->then(fn($v) => ['callable' => $v])
+                        ->end()
+                        ->children()
+                            ->variableNode('callable')
+                                ->info('{function name}, [{class name}, {static method}], [{service id}, {method}]')
+                                ->isRequired()
+                                ->cannotBeEmpty()
+                                ->validate()
+                                    ->ifTrue(fn($v) => \is_object($v) || \is_object($v[0] ?? null))
+                                    ->thenInvalid('Callable objects are not supported.')
+                                ->end()
+                            ->end()
+                            ->variableNode('on_exception_return')
+                                ->info('The default value to return if the function throws an exception')
+                                ->defaultValue(AsTwigFunction::THROW)
+                            ->end()
                         ->end()
                     ->end()
                 ->end()
@@ -67,15 +92,15 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
             ->addTag('twig.service', ['alias' => TwigServiceRuntime::PARAMETER_BAG])
         ;
 
-        /** @var array<string,Function> $configuredFunctions */
+        /** @var array<string,FunctionContext> $configuredFunctions */
         $configuredFunctions = $container->getParameter('zenstruck_twig_service.functions');
 
         $container->getParameterBag()->remove('zenstruck_twig_service.functions');
 
         $functions = [];
 
-        foreach ($configuredFunctions as $alias => $value) {
-            $functions = self::addToFunctions($functions, $alias, $value);
+        foreach ($configuredFunctions as $alias => $context) {
+            $functions = self::addToFunctions($functions, $alias, $context[0], $context[1]);
         }
 
         foreach ($container->getDefinitions() as $id => $definition) {
@@ -100,12 +125,14 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
                     continue;
                 }
 
-                $alias = $attribute->newInstance()->alias ?? $method->name;
+                $attribute = $attribute->newInstance();
 
+                /** @var AsTwigFunction $attribute */
                 $functions = self::addToFunctions(
                     $functions,
-                    $alias,
-                    [$method->isStatic() ? $class : $id, $method->name]
+                    $attribute->alias ?? $method->name,
+                    [$method->isStatic() ? $class : $id, $method->name],
+                    $attribute->onExceptionReturn
                 );
             }
         }
@@ -117,25 +144,33 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
                 continue;
             }
 
-            $alias = $attribute->newInstance()->alias ?? $ref->getShortName();
+            $attribute = $attribute->newInstance();
 
-            $functions = self::addToFunctions($functions, $alias, $ref->name); // @phpstan-ignore-line
+            /** @var AsTwigFunction $attribute */
+            $functions = self::addToFunctions(
+                $functions,
+                $attribute->alias ?? $ref->getShortName(),
+                $ref->name, // @phpstan-ignore-line
+                $attribute->onExceptionReturn
+            );
         }
 
-        foreach ($functions as $alias => $function) {
+        foreach ($functions as $alias => $functionContext) {
             $definition = $container->register('.zenstruck_twig_service.function.'.$alias)
+                ->addArgument($functionContext[1])
                 ->addTag('twig.function', ['alias' => $alias])
             ;
 
-            if (\is_callable($function)) {
-                $definition->setClass(InvokableCallable::class)->addArgument($function);
+            if (\is_callable($functionContext[0])) {
+                $definition->setClass(InvokableCallable::class)->addArgument($functionContext[0]);
 
                 continue;
             }
 
             $definition
                 ->setClass(InvokableServiceMethod::class)
-                ->setArguments([new Reference($function[0]), $function[1]])
+                ->addArgument(new Reference($functionContext[0][0]))
+                ->addArgument($functionContext[0][1])
             ;
         }
     }
@@ -150,19 +185,13 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
         $functions = [];
 
         foreach ($mergedConfig['functions'] as $key => $value) {
-            if (!\is_numeric($key)) {
-                $functions[$key] = $value;
+            $alias = match (true) {
+                !\is_numeric($key) => $key,
+                \is_string($value['callable']) => (new \ReflectionFunction($value['callable']))->getShortName(),
+                default => $value['callable'][1] ?? throw new \LogicException('Invalid callable.'),
+            };
 
-                continue;
-            }
-
-            if (\is_string($value) && \is_callable($value)) {
-                $functions[(new \ReflectionFunction($value))->getShortName()] = $value;
-
-                continue;
-            }
-
-            $functions[$value[1] ?? throw new \LogicException('Invalid callable.')] = $value;
+            $functions[$alias] = [$value['callable'], $value['on_exception_return']];
         }
 
         $container->setParameter('zenstruck_twig_service.functions', $functions);
@@ -197,18 +226,18 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
     }
 
     /**
-     * @param array<string,Function> $functions
-     * @param Function               $what
+     * @param array<string,FunctionContext> $functions
+     * @param Function                      $what
      *
-     * @return array<string,Function>
+     * @return array<string,FunctionContext>
      */
-    private static function addToFunctions(array $functions, string $alias, string|array $what): array
+    private static function addToFunctions(array $functions, string $alias, string|array $what, mixed $onExceptionReturn): array
     {
         if (isset($functions[$alias])) {
-            throw new LogicException(\sprintf('The function alias "%s" is already being used for "%s".', $alias, \is_string($functions[$alias]) ? $functions[$alias] : \implode('::', $functions[$alias])));
+            throw new LogicException(\sprintf('The function alias "%s" is already being used for "%s".', $alias, \is_string($functions[$alias][1]) ? $functions[$alias][1] : \implode('::', $functions[$alias][1])));
         }
 
-        $functions[$alias] = $what;
+        $functions[$alias] = [$what, $onExceptionReturn];
 
         return $functions;
     }
