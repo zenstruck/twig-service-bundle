@@ -167,11 +167,8 @@ use Zenstruck\Twig\AsTwigService;
 #[AsTwigService(alias: 'posts')]
 class PostService
 {
-    private PostRepository $repo;
-
-    public function __construct(PostRepository $repo)
+    public function __construct(private PostRepository $repo)
     {
-        $this->repo = $repo;
     }
 
     /**
