@@ -50,7 +50,7 @@ final class ListCommand extends Command
             $io->comment("As filter: use as <info>{value}|fn('{alias}', {...args})</info> or <info>{value}|fn_{alias}({...args})</info>");
             $io->table(
                 ['Alias', 'Callable'],
-                \array_map(fn(string $alias) => [$alias, $this->functions->functions()->get($alias)], $functions)
+                \array_map(fn(string $alias) => [$alias, $this->functions->functions()->get($alias)], $functions),
             );
         }
 
@@ -70,8 +70,8 @@ final class ListCommand extends Command
                             $isClass ? (\method_exists($service, '__invoke') ? 'yes' : 'no') : '?',
                         ];
                     },
-                    $services, \array_keys($services)
-                )
+                    $services, \array_keys($services),
+                ),
             );
         }
 

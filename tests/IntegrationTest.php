@@ -145,7 +145,7 @@ final class IntegrationTest extends KernelTestCase
             serviceMethod2foobar
             /some/path\n
             EOF,
-            $rendered
+            $rendered,
         );
     }
 
@@ -172,7 +172,7 @@ final class IntegrationTest extends KernelTestCase
             serviceMethod2foobar
             /some/path\n
             EOF,
-            $rendered
+            $rendered,
         );
     }
 

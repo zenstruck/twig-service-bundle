@@ -105,7 +105,7 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
                 $functions = self::addToFunctions(
                     $functions,
                     $alias,
-                    [$method->isStatic() ? $class : $id, $method->name]
+                    [$method->isStatic() ? $class : $id, $method->name],
                 );
             }
         }
@@ -171,7 +171,7 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
             AsTwigService::class,
             static function(ChildDefinition $definition, AsTwigService $attribute) {
                 $definition->addTag('twig.service', ['alias' => $attribute->alias]);
-            }
+            },
         );
 
         $container->register('.zenstruck.twig.service_extension', TwigServiceExtension::class)
