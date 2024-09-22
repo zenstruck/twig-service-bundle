@@ -45,13 +45,13 @@ class SomeService
 {
     // ...
 
-    #[AsTwigFunction] // will be available as "someMethod" in twig
+    #[AsTwigFunction] // will be available as "fn_someMethod()" in twig
     public function someMethod($arg1, $arg2): string
     {
         // ...
     }
 
-    #[AsTwigFunction('alias')] // will be available as "alias" in twig
+    #[AsTwigFunction('alias')] // will be available as "fn_alias()" in twig
     public function anotherMethod($arg1, $arg2): string
     {
         // ...
