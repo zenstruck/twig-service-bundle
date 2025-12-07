@@ -39,11 +39,11 @@ use Zenstruck\Twig\Service\TwigServiceRuntime;
  */
 final class ZenstruckTwigServiceExtension extends ConfigurableExtension implements ConfigurationInterface, CompilerPassInterface
 {
-    public function getConfigTreeBuilder(): TreeBuilder
+    public function getConfigTreeBuilder(): TreeBuilder // @phpstan-ignore missingType.generics
     {
         $builder = new TreeBuilder('zenstruck_twig_service');
 
-        $builder->getRootNode() // @phpstan-ignore-line
+        $builder->getRootNode()
             ->children()
                 ->arrayNode('functions')
                     ->info('Callables to make available with fn() twig function/filter')
