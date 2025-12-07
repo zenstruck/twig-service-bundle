@@ -62,7 +62,6 @@ final class Kernel extends BaseKernel
         $c->register(ServiceB::class)->setAutoconfigured(true)->setAutowired(true);
         $c->register(ServiceC::class)->setAutoconfigured(true)->setAutowired(true);
         $c->register(ServiceD::class)->setAutoconfigured(true)->setAutowired(true);
-        $c->register(InvalidService::class);
     }
 
     protected function configureRoutes(RoutingConfigurator $routes): void
