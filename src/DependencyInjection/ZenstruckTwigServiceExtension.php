@@ -50,7 +50,7 @@ final class ZenstruckTwigServiceExtension extends ConfigurableExtension implemen
                     ->example(['strlen', 'alias' => ['Some\Class', 'somePublicStaticMethod']])
                     ->variablePrototype()
                         ->validate()
-                            ->ifTrue(fn($v) => \is_object($v) || \is_object($v[0] ?? null))
+                            ->ifTrue(static fn($v) => \is_object($v) || \is_object($v[0] ?? null))
                             ->thenInvalid('Callable objects are not supported.')
                         ->end()
                     ->end()
