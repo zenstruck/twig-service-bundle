@@ -26,11 +26,14 @@ final class ListCommandTest extends KernelTestCase
      */
     public function execute(): void
     {
+        $container = self::getContainer();
+        $routerClass = \get_debug_type($container->get('router'));
+
         $this->executeConsoleCommand('zenstruck:twig-service:list')
             ->assertOutputContains('Available Functions/Filters')
             ->assertOutputContains('strlen             strlen')
             ->assertOutputContains('someMethod1        Zenstruck\Twig\Tests\Fixture\SomeClass::someMethod1()')
-            ->assertOutputContains('router             Symfony\Bundle\FrameworkBundle\Routing\Router->generate()')
+            ->assertOutputContains(\sprintf('router             %s->generate()', $routerClass))
             ->assertOutputContains('method1            Zenstruck\Twig\Tests\Fixture\ServiceC->method1()')
             ->assertOutputContains('second             App\second')
             ->assertOutputContains('Available Services')
